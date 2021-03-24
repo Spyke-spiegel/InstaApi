@@ -4,6 +4,7 @@ import login from '../views/login.vue'
 import newBrand from '../views/newBrand.vue'
 import brandPage from '../views/brandPage.vue'
 
+
 const routes = [
   {
     path: '/',
@@ -23,10 +24,11 @@ const routes = [
     component: newBrand
   },
   {
-    path: '/brandPage',
+    path: '/brandPage/:brand',
     name: 'brandPage',
     component: brandPage
   },
+ 
 
 ]
 

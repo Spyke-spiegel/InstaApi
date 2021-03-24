@@ -7,6 +7,7 @@
         <router-link to="/login">Login</router-link>
          |
         <router-link to="/newBrand">Brand Manager</router-link>
+
       </div>
       <div class="loginInfo"></div>
     </div>
