@@ -79,7 +79,7 @@ export default {
       //   await console.log("test access token : ", this.access_token);
       let url = new URL("https://graph.facebook.com/v10.0/17841446016764337/");
       url.search = new URLSearchParams({
-        fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type,thumbnail_url}}`,
+        fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type}}`,
         access_token: this.access_token,
       });
 

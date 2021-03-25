@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
-    <h1>InstahAPI</h1>
+    <h1>InstaHAPI</h1>
     <!-- <button class="login" v-on:click="login">login Facebook</button> -->
     <div class="grid">
       <ul v-for="brand in listBrand">
