@@ -3,8 +3,7 @@ import Home from '../views/Home.vue'
 import login from '../views/login.vue'
 import brandManager from '../views/brandManager.vue'
 import brandPage from '../views/brandPage.vue'
-import postView from '../views/postView.vue'
-
+ 
 
 const routes = [
   {
@@ -29,12 +28,7 @@ const routes = [
     name: 'brandPage',
     component: brandPage
   },
-  {
-    path: '/postView',
-    name: 'postView',
-    component: postView
-  },
- 
+  
 
 ]
 

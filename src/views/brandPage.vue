@@ -18,32 +18,41 @@
 
     <div class="grid">
       <ul v-for="doc in posts.media.data">
-        <div class="card">
-          <div class="imgCard">
-            <div
-              class="test"
-              v-if="
-                doc.media_type == 'IMAGE' || doc.media_type == 'CAROUSEL_ALBUM'
-              "
-            >
-              <img :src="doc.media_url" class="image" />
-            </div>
-            <div class="test" v-else>
-              <video controls muted poster :src="doc.media_url" :poster="doc.thumbnail_url"></video>
-            </div>
-            <div class="likeComment">
-              <i class="far fa-heart">
-                <div class="txt">{{ doc.like_count }}</div>
-              </i>
-              <i class="far fa-comment"
-                ><div class="txt">{{ doc.comments_count }}</div></i
+          <div class="card">
+        <a :href="doc.permalink" target="blank">
+            <div class="imgCard">
+              <div
+                class="test"
+                v-if="
+                  doc.media_type == 'IMAGE' ||
+                  doc.media_type == 'CAROUSEL_ALBUM'
+                "
               >
-            </div>
-            <!-- <div class="secondcolumn">
+                <img :src="doc.media_url" class="image" />
+              </div>
+              <div class="test" v-else>
+                <video
+                  controls
+                  muted
+                  poster
+                  :src="doc.media_url"
+                  :poster="doc.thumbnail_url"
+                ></video>
+              </div>
+              <div class="likeComment">
+                <i class="far fa-heart">
+                  <div class="txt">{{ doc.like_count }}</div>
+                </i>
+                <i class="far fa-comment"
+                  ><div class="txt">{{ doc.comments_count }}</div></i
+                >
+              </div>
+              <!-- <div class="secondcolumn">
                 <span>{{ moment(doc.timestamp).format("MMM Do YY") }}</span>
               </div> -->
+            </div>
+        </a>
           </div>
-        </div>
       </ul>
     </div>
   </div>
@@ -79,7 +88,7 @@ export default {
       //   await console.log("test access token : ", this.access_token);
       let url = new URL("https://graph.facebook.com/v10.0/17841446016764337/");
       url.search = new URLSearchParams({
-        fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type}}`,
+        fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type,permalink}}`,
         access_token: this.access_token,
       });
 
@@ -169,7 +178,6 @@ a {
   display: flex;
   flex-direction: row;
 }
-
 
 .stat > h3 {
   padding: 10px;
