@@ -18,8 +18,8 @@
 
     <div class="grid">
       <ul v-for="doc in posts.media.data">
-          <div class="card">
-        <a :href="doc.permalink" target="blank">
+        <div class="card">
+          <a :href="doc.permalink" target="blank">
             <div class="imgCard">
               <div
                 class="test"
@@ -51,8 +51,8 @@
                 <span>{{ moment(doc.timestamp).format("MMM Do YY") }}</span>
               </div> -->
             </div>
-        </a>
-          </div>
+          </a>
+        </div>
       </ul>
     </div>
   </div>

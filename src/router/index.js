@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import login from '../views/login.vue'
 import brandManager from '../views/brandManager.vue'
 import brandPage from '../views/brandPage.vue'
+import posting from '../views/posting.vue'
  
 
 const routes = [
@@ -27,6 +28,11 @@ const routes = [
     path: '/brandPage/:brand',
     name: 'brandPage',
     component: brandPage
+  },
+  {
+    path: '/posting',
+    name: 'posting',
+    component: posting
   },
   
 

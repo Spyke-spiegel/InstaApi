@@ -1,0 +1,103 @@
+<template>
+  <div class="container">
+    <h1>Posting Page</h1>
+    <progress :value="barValue" max="100" :ref="uploader">0%</progress>
+    <input type="file" v-on:change="upload" id="fileButton" />
+    <button v-on:click="createIGMedia">Creation IG Media</button>
+    <button v-on:click="publishIGMedia">Publish to IG</button>
+  </div>
+</template>
+
+<script>
+import { storage } from "../config/firebaseInit";
+import { db } from "../config/firebaseInit";
+export default {
+  name: "posting",
+  data() {
+    return {
+      barValue: 0,
+      uploader: "",
+      picURL: "",
+      access_token: "",
+      idMedia: "",
+    };
+  },
+
+  methods: {
+    async upload(e) {
+      var vm = this;
+      var file = e.target.files[0];
+      var storageRef = storage.ref("picture/" + file.name);
+      var task = storageRef.put(file);
+      let id = await db
+        .collection("Users")
+        .doc("105818491592653")
+        .get()
+        .then((doc) => {
+          vm.access_token = doc.data().access_token;
+        });
+
+      task.on(
+        "state_changed",
+        function progress(snapshot) {
+          var percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(percent);
+          vm.barValue = percent;
+        },
+
+        function error(err) {
+          console.log("an errror ocurred: ", err);
+        },
+
+        function complete(snapshot) {
+          var url = task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            vm.picURL = downloadURL;
+          });
+        }
+      );
+    },
+
+    createIGMedia() {
+      let url = new URL(
+        "https://graph.facebook.com/v10.0/17841446016764337/media"
+      );
+      url.search = new URLSearchParams({
+        image_url: this.picURL,
+        caption: "%23TestAPI",
+        access_token: this.access_token,
+      });
+
+      fetch(url, {
+        method: "POST",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log("response ", response);
+          this.idMedia = response.id;
+        });
+    },
+
+   publishIGMedia() {
+      let url = new URL(
+        "https://graph.facebook.com/v10.0/17841446016764337/media_publish"
+      );
+      url.search = new URLSearchParams({
+        creation_id: this.idMedia,
+        access_token: this.access_token,
+      });
+
+      fetch(url, {
+        method: "POST",
+      })
+        .then((res) => res.json()) /*  */
+        .then((response) => {
+          console.log("response ", response);
+        });
+    },
+  },
+};
+</script>
+
+<style>
+</style>

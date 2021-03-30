@@ -60,6 +60,7 @@ export default {
   methods: {
     loginWithFacebook() {
       window.FB.login((response) => {
+        console.log("look for permissions : ", response)
         var userInfo = {
           loginType: "fb",
           fb: response,
@@ -88,7 +89,7 @@ export default {
           });
         // console.log("Test before DB : " + response.authResponse.accessToken);
         // router.push("/home");
-      });
+      }, {scope:'read_insights,ads_management,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_read_engagement',return_scopes: true});
     },
   },
 };

@@ -33,7 +33,7 @@
 <script>
 // @ is an alias to /src
 // import { initFbsdk } from "@/config/fb.js";
-import db from "../config/firebaseInit";
+import {db} from "../config/firebaseInit";
 
 export default {
   name: "Home",
