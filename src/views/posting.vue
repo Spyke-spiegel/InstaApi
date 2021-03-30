@@ -23,6 +23,16 @@
     <div>{{ hashtags }}</div>
     <button v-on:click="createIGMedia">Creation IG Media</button>
     <button v-on:click="publishIGMedia">Publish to IG</button>
+    <div v-if="mediaCreated == true">
+      <h2>The media have been created and is ready to be posted</h2>
+    </div>
+    <div v-else-if="mediaPosted == true">
+      <h2>The media has been posted, go check Instagram</h2>
+    </div>
+    <div v-else-if="loading == true">
+      <h2>The media has been posted, go check Instagram</h2>
+    </div>
+    
   </div>
 </template>
 
@@ -41,11 +51,16 @@ export default {
       hashtags: "",
       caption: "",
       quotaLimit: "",
+      mediaCreated: false,
+      mediaPosted: false,
+      errorIgMsg: "",
+      loading: false,
     };
   },
 
   async created() {
-    let Id = await db.collection("Users")
+    let Id = await db
+      .collection("Users")
       .doc("105818491592653")
       .get()
       .then((doc) => {
@@ -97,6 +112,8 @@ export default {
     },
 
     createIGMedia() {
+      this.mediaCreated = false
+      this.loading = true
       let url = new URL(
         "https://graph.facebook.com/v10.0/17841446016764337/media"
       );
@@ -113,7 +130,11 @@ export default {
         .then((response) => {
           console.log("response ", response);
           this.idMedia = response.id;
-        });
+        }).then(
+          this.mediaCreated = true,
+this.mediaPosted = false,
+this.loading = false
+        );
     },
 
     publishIGMedia() {
@@ -131,7 +152,8 @@ export default {
         .then((res) => res.json()) /*  */
         .then((response) => {
           console.log("response ", response);
-        });
+        })
+        .then((this.mediaPosted = true), (this.mediaCreated = false));
     },
   },
 };
