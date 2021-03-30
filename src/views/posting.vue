@@ -1,8 +1,26 @@
 <template>
   <div class="container">
     <h1>Posting Page</h1>
-    <progress :value="barValue" max="100" :ref="uploader">0%</progress>
+    <div v-if="barValue == 100">
+      <img :src="picURL" id="preview" />
+    </div>
+    <div v-else>
+      <progress :value="barValue" max="100" :ref="uploader">0%</progress>
+    </div>
     <input type="file" v-on:change="upload" id="fileButton" />
+    <input
+      type="text"
+      v-model="hashtags"
+      placeholder="add your hashtags"
+      id="postText"
+    />
+    <input
+      type="text"
+      v-model="caption"
+      placeholder="add your caption"
+      id="postText"
+    />
+    <div>{{ hashtags }}</div>
     <button v-on:click="createIGMedia">Creation IG Media</button>
     <button v-on:click="publishIGMedia">Publish to IG</button>
   </div>
@@ -20,7 +38,34 @@ export default {
       picURL: "",
       access_token: "",
       idMedia: "",
+      hashtags: "",
+      caption: "",
+      quotaLimit: "",
     };
+  },
+
+  async created() {
+    let Id = await db.collection("Users")
+      .doc("105818491592653")
+      .get()
+      .then((doc) => {
+        this.access_token = doc.data().access_token;
+      });
+
+    let url = await new URL(
+      "https://graph.facebook.com/v10.0/17841446016764337/content_publishing_limit"
+    );
+    url.search = new URLSearchParams({
+      access_token: this.access_token,
+    });
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log("response ", response);
+        this.quotaLimit = response;
+      });
   },
 
   methods: {
@@ -29,13 +74,6 @@ export default {
       var file = e.target.files[0];
       var storageRef = storage.ref("picture/" + file.name);
       var task = storageRef.put(file);
-      let id = await db
-        .collection("Users")
-        .doc("105818491592653")
-        .get()
-        .then((doc) => {
-          vm.access_token = doc.data().access_token;
-        });
 
       task.on(
         "state_changed",
@@ -64,7 +102,7 @@ export default {
       );
       url.search = new URLSearchParams({
         image_url: this.picURL,
-        caption: "%23TestAPI",
+        caption: this.hashtags,
         access_token: this.access_token,
       });
 
@@ -78,7 +116,7 @@ export default {
         });
     },
 
-   publishIGMedia() {
+    publishIGMedia() {
       let url = new URL(
         "https://graph.facebook.com/v10.0/17841446016764337/media_publish"
       );
@@ -99,5 +137,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#preview {
+  width: 50%;
+  height: auto;
+}
 </style>
