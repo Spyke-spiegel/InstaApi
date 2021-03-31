@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import db from "../config/firebaseInit";
+import { db } from "../config/firebaseInit";
 import { initFbsdk } from "@/config/fb.js";
 import router from "@/router/index";
 export default {
@@ -59,37 +59,44 @@ export default {
   },
   methods: {
     loginWithFacebook() {
-      window.FB.login((response) => {
-        console.log("look for permissions : ", response)
-        var userInfo = {
-          loginType: "fb",
-          fb: response,
-        };
-        // console.log("fb response", response);
-        let url = new URL(
-          "https://graph.facebook.com/v10.0/oauth/access_token"
-        );
-        url.search = new URLSearchParams({
-          grant_type: "fb_exchange_token",
-          client_id: "273708304202650",
-          client_secret: "daa2c101a805d31265963875c8912402",
-          fb_exchange_token: response.authResponse.accessToken,
-        });
-
-        fetch(url, {
-          method: "GET",
-        })
-          .then((res) => res.json())
-          .then((response2) => {
-            // console.log("response 2 ", response2);
-        db.collection("Users").doc(response.authResponse.userID).set({
-          access_token: response2.access_token,
-          expires_in: response2.expires_in
-        });
+      window.FB.login(
+        (response) => {
+          console.log("look for permissions : ", response);
+          var userInfo = {
+            loginType: "fb",
+            fb: response,
+          };
+          // console.log("fb response", response);
+          let url = new URL(
+            "https://graph.facebook.com/v10.0/oauth/access_token"
+          );
+          url.search = new URLSearchParams({
+            grant_type: "fb_exchange_token",
+            client_id: "273708304202650",
+            client_secret: "daa2c101a805d31265963875c8912402",
+            fb_exchange_token: response.authResponse.accessToken,
           });
-        // console.log("Test before DB : " + response.authResponse.accessToken);
-        // router.push("/home");
-      }, {scope:'read_insights,ads_management,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_read_engagement',return_scopes: true});
+
+          fetch(url, {
+            method: "GET",
+          })
+            .then((res) => res.json())
+            .then((response2) => {
+              // console.log("response 2 ", response2);
+              db.collection("Users").doc(response.authResponse.userID).set({
+                access_token: response2.access_token,
+                expires_in: response2.expires_in,
+              });
+            });
+          // console.log("Test before DB : " + response.authResponse.accessToken);
+          // router.push("/home");
+        },
+        {
+          scope:
+            "read_insights,ads_management,business_management,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_read_engagement",
+          return_scopes: true,
+        }
+      );
     },
   },
 };

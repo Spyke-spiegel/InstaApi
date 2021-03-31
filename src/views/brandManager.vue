@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import db from "../config/firebaseInit";
+import { db } from "../config/firebaseInit";
 export default {
   name: "newBrand",
   data() {
@@ -34,7 +34,7 @@ export default {
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          //   console.log(doc.id, " => ", doc.data());
+          console.log(doc.id, " => ", doc.data());
           this.listBrand.push(doc.data());
         });
       })
@@ -73,5 +73,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
