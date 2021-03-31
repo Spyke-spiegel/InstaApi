@@ -34,6 +34,7 @@
 // @ is an alias to /src
 // import { initFbsdk } from "@/config/fb.js";
 import {db} from "../config/firebaseInit";
+import firebase from "firebase"
 
 export default {
   name: "Home",
@@ -42,31 +43,43 @@ export default {
       brand: [],
       listBrand: [],
       access_token: "",
+      uid: "",
     };
   },
 
-  created() {
-    db.collection("brand")
+  async created() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.uid = user.uid
+      } else {
+
+      }
+    });
+
+    await db.collection("Users").doc(this.uid).collection('brand')
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
           this.brand.push(doc.data().brand);
-          // console.log(doc.id, " => ", doc.data());
+          console.log(doc.id, " => ", doc.data());
         });
       })
-      .then(this.queryInstaData());
+      // .then(this.queryInstaData());
+
+      await this.queryInstaData()
   },
 
   methods: {
     async queryInstaData() {
-      //   await console.log("Data 1 :", doc);
+        // await console.log("Data 1 :", doc);
       var posts = "";
       await db
         .collection("Users")
-        .doc("105818491592653")
+        .doc(this.uid)
         .get()
         .then((doc) => {
+          console.log(doc.data())
           this.access_token = doc.data().access_token;
         });
       await this.brand.forEach((i) => {

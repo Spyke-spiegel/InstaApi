@@ -24,7 +24,7 @@
     <div>{{ hashtags }}</div>
     <button v-on:click="publishIGMedia">Publish to IG</button>
     <div v-if="mediaCreated == true && mediaPosted == false">
-      <h2>The media have been created and is ready to be posted</h2>
+      <h2>The media have been created and is now posting</h2>
     </div>
     <div v-else-if="mediaPosted == true && mediaCreated == false">
       <h2>The media has been posted, go check Instagram</h2>
@@ -35,6 +35,9 @@
       "
     >
       <h2>Loading ...</h2>
+      <div v-if="posted == true">
+        <a :href="postURL" target="_blank" rel="noopener noreferrer">Link to the Instagram Post</a>
+      </div>
     </div>
   </div>
 </template>
@@ -42,6 +45,7 @@
 <script>
 import { storage } from "../config/firebaseInit";
 import { db } from "../config/firebaseInit";
+import firebase from 'firebase'
 export default {
   name: "posting",
   data() {
@@ -60,13 +64,21 @@ export default {
       loading: false,
       postID: "",
       postURL:"",
+      posted: false,
+      uid:"",
     };
   },
 
   async created() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.uid = user.uid;
+      } else {
+      }
+    });
     let Id = await db
       .collection("Users")
-      .doc("105818491592653")
+      .doc(this.uid)
       .get()
       .then((doc) => {
         this.access_token = doc.data().access_token;
@@ -177,10 +189,11 @@ export default {
       })
         .then((res) => res.json()) /*  */
         .then((response) => {
-          console.log("response post URL : ", response);
-          this.postURL = response
+          console.log("response post URL : ", response.permalink);
+          this.postURL = response.permalink
+          
         });
-      (this.mediaPosted = await true), (this.mediaCreated = await false);
+      (this.mediaPosted = await true), (this.mediaCreated = await false), (this.posted = true);
 
 
       // Calling the posting quota limit for knowing the new number
