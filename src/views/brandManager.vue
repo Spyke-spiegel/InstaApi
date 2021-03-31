@@ -18,34 +18,49 @@
 
 <script>
 import { db } from "../config/firebaseInit";
+import firebase from 'firebase';
+
 export default {
   name: "newBrand",
   data() {
     return {
       brand: null,
       listBrand: [],
+      uid: ""
     };
   },
 
-  created() {
-    // let listBrand = [];
-    db.collection("brand")
+  async created() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.uid = user.uid;
+      } else {
+      }
+    });
+
+    await db
+      .collection("Users")
+      .doc(this.uid)
+      .collection("brand")
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
           this.listBrand.push(doc.data());
+          console.log(doc.id, " => ", doc.data());
         });
-      })
-      .then(console.log(this.listBrand));
+      });
+    // .then(this.queryInstaData());
+
   },
 
   methods: {
     addBrand() {
       if (this.listBrand.some((i) => i.brand === this.brand) == false) {
         this.listBrand.push({ brand: this.brand });
-        db.collection("brand")
+        db.collection("Users")
+          .doc(this.uid)
+          .collection("brand")
           .doc(this.brand)
           .set({
             brand: this.brand,
@@ -55,7 +70,9 @@ export default {
     },
     deleteBrand(id) {
       console.log(id);
-      db.collection("brand")
+      db.collection("Users")
+        .doc(this.uid)
+        .collection('brand')
         .doc(id)
         .delete()
         .then(() => {

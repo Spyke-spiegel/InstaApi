@@ -17,21 +17,21 @@ export default {
     navbar
   },
 
-  setup () {
-    const router = useRouter();
-    const route = useRoute(); 
+  // setup () {
+  //   const router = useRouter();
+  //   const route = useRoute(); 
 
-    onBeforeMount(() => {
-      firebase.auth().onAuthStateChanged((user) => {
-        if (!user) {
-          router.replace('/login');
-        } else if ( route.path == "/login") {
-          router.replace('/');
-        }
-      })
-    })
+  //   onBeforeMount(() => {
+  //     firebase.auth().onAuthStateChanged((user) => {
+  //       if (!user) {
+  //         router.replace('/login');
+  //       } else if ( route.path == "/login") {
+  //         router.replace('/');
+  //       }
+  //     })
+  //   })
     
-  }
+  // }
 }
 </script>
 

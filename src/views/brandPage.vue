@@ -36,7 +36,7 @@
                   muted
                   poster
                   :src="doc.media_url"
-                  :poster="doc.thumbnail_url"
+
                 ></video>
               </div>
               <div class="likeComment">
@@ -59,7 +59,8 @@
 </template>
 
 <script>
-import db from "../config/firebaseInit";
+import { db } from "../config/firebaseInit";
+import firebase from 'firebase'
 
 export default {
   name: "brandPage",
@@ -67,12 +68,22 @@ export default {
     return {
       posts: {},
       access_token: "",
+      uid: "",
     };
   },
 
-  beforeMount() {
-    this.queryInstaData();
+   async created() {
+    await firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.uid = user.uid;
+      } else {
+      }
+    });
+
+      await this.queryInstaData();
   },
+
+
 
   methods: {
     async queryInstaData() {
@@ -80,10 +91,11 @@ export default {
       var posts = "";
       await db
         .collection("Users")
-        .doc("105818491592653")
+        .doc(this.uid)
         .get()
         .then((doc) => {
           this.access_token = doc.data().access_token;
+          console.log("access token : ", doc.data().access_token)
         });
       //   await console.log("test access token : ", this.access_token);
       let url = new URL("https://graph.facebook.com/v10.0/17841446016764337/");
