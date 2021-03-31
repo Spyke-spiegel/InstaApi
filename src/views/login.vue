@@ -1,8 +1,17 @@
 
 <template>
   <div class="container">
-    <button v-on:click="login">login</button>
-    <button v-on:click="logout">logout</button>
+    <div class="text">
+      <h1>Welcome to InstHappy</h1>
+      <h2>the happiest Instagram place</h2>
+      <div>
+        For beginning, please Login to your Facebook account using the link
+        below
+      </div>
+    </div>
+    <button class="login" v-on:click="login">
+      <i class="fab fa-facebook"></i>Connect with Facebook
+    </button>
   </div>
 </template>
 
@@ -44,7 +53,7 @@ export default {
           // this.$router.replace({name: 'login'})
         })
         .catch((error) => {
-          alert(error)
+          alert(error);
         });
       await console.log(this.fbData.user.uid);
       let url = await new URL(
@@ -62,7 +71,8 @@ export default {
         .then((res) => res.json())
         .then((response2) => {
           if (response2.expires_in) {
-          this.expires_in = response2.expires_in}
+            this.expires_in = response2.expires_in;
+          }
           console.log("response 2 ", response2);
           db.collection("Users").doc(this.fbData.user.uid).set({
             access_token: response2.access_token,
@@ -80,3 +90,29 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.login {
+  margin: 20px;
+  padding: 7px;
+  background-color: #1877f2;
+  border: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 25px;
+}
+
+.fab {
+  padding: 10px;
+}
+
+.text {
+  margin: 20px;
+}
+
+.text > * {
+  margin: 20px;
+}
+</style>

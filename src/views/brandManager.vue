@@ -1,11 +1,12 @@
 <template>
   <div class="container">
     <h2 class="title">
-      Please enter the name of the brand that you like to add
+      Please enter the name of the brand that you like to watch
     </h2>
     <input type="text" v-model="brand" class="input" required />
-    <button v-on:click="addBrand" type="submit">add</button>
+    <button v-on:click="addBrand" type="submit" style="margin-left: 15px">add</button>
     <div>
+      <div class="text2">List of already watched brand</div>
       <ul class="list" v-for="brand in listBrand">
         <div class="delBtn">
           <h2>{{ brand.brand }}</h2>
@@ -90,4 +91,24 @@ export default {
 </script>
 
 <style scoped>
+.delBtn{
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.delBtn > button {
+  margin: 10px;
+}
+
+.title {
+  margin: 20px;
+}
+
+.text2 {
+  padding: 20px 0 10px 0;
+}
+
 </style>

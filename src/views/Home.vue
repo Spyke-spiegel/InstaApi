@@ -1,8 +1,11 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <h1>InstaHAPI</h1>
+    <div class="logo">
+    <img alt="Vue logo" src="../assets/insthappy.png" />
+    <h1>Welcome to InstaHappy</h1>
     <!-- <button class="login" v-on:click="login">login Facebook</button> -->
+</div>
+    <h2>list of Brand that you watch</h2>
     <div class="grid">
       <ul v-for="brand in listBrand">
         <router-link
@@ -155,5 +158,9 @@ export default {
 
 img {
   height: 10vh;
+}
+
+.logo {
+  margin: 25px;
 }
 </style>
