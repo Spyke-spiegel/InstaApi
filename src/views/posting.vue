@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h1>Posting Page</h1>
+    <h2>number of posts send : {{ quotaLimit }} of 25</h2>
     <div v-if="barValue == 100">
       <img :src="picURL" id="preview" />
     </div>
@@ -21,18 +22,20 @@
       id="postText"
     />
     <div>{{ hashtags }}</div>
-    <button v-on:click="createIGMedia">Creation IG Media</button>
     <button v-on:click="publishIGMedia">Publish to IG</button>
-    <div v-if="mediaCreated == true">
+    <div v-if="mediaCreated == true && mediaPosted == false">
       <h2>The media have been created and is ready to be posted</h2>
     </div>
-    <div v-else-if="mediaPosted == true">
+    <div v-else-if="mediaPosted == true && mediaCreated == false">
       <h2>The media has been posted, go check Instagram</h2>
     </div>
-    <div v-else-if="loading == true">
-      <h2>The media has been posted, go check Instagram</h2>
+    <div
+      v-else-if="
+        loading == true && mediaCreated == false && mediaPosted == false
+      "
+    >
+      <h2>Loading ...</h2>
     </div>
-    
   </div>
 </template>
 
@@ -55,6 +58,8 @@ export default {
       mediaPosted: false,
       errorIgMsg: "",
       loading: false,
+      postID: "",
+      postURL:"",
     };
   },
 
@@ -79,8 +84,9 @@ export default {
       .then((res) => res.json())
       .then((response) => {
         console.log("response ", response);
-        this.quotaLimit = response;
+        this.quotaLimit = response.data[0].quota_usage;
       });
+    await console.log("quota limit: ", this.quotaLimit);
   },
 
   methods: {
@@ -111,10 +117,13 @@ export default {
       );
     },
 
-    createIGMedia() {
-      this.mediaCreated = false
-      this.loading = true
-      let url = new URL(
+    async publishIGMedia() {
+      (this.mediaCreated = await false),
+        (this.mediaPosted = await false),
+        (this.loading = await true);
+
+        // API call for creating the IG Media
+      let url = await new URL(
         "https://graph.facebook.com/v10.0/17841446016764337/media"
       );
       url.search = new URLSearchParams({
@@ -123,37 +132,78 @@ export default {
         access_token: this.access_token,
       });
 
-      fetch(url, {
+      await fetch(url, {
         method: "POST",
       })
         .then((res) => res.json())
         .then((response) => {
           console.log("response ", response);
           this.idMedia = response.id;
-        }).then(
-          this.mediaCreated = true,
-this.mediaPosted = false,
-this.loading = false
-        );
-    },
+        });
+      (this.mediaCreated = await true), (this.loading = await false);
 
-    publishIGMedia() {
-      let url = new URL(
+
+      // API Call for publishing the IG Media previously created
+
+      let url2 = await new URL(
         "https://graph.facebook.com/v10.0/17841446016764337/media_publish"
       );
-      url.search = new URLSearchParams({
+      url2.search = await new URLSearchParams({
         creation_id: this.idMedia,
         access_token: this.access_token,
       });
 
-      fetch(url, {
+      await fetch(url2, {
         method: "POST",
       })
         .then((res) => res.json()) /*  */
         .then((response) => {
           console.log("response ", response);
-        })
-        .then((this.mediaPosted = true), (this.mediaCreated = false));
+          this.postID = response.id
+        });
+
+        // API Call fopr retrieving the URL of the Post created
+
+        let url3 = await new URL(
+        `https://graph.facebook.com/v10.0/${this.postID}`
+      );
+      url3.search = await new URLSearchParams({
+        fields:"permalink",
+        access_token: this.access_token,
+      });
+
+      await fetch(url3, {
+        method: "GET",
+      })
+        .then((res) => res.json()) /*  */
+        .then((response) => {
+          console.log("response post URL : ", response);
+          this.postURL = response
+        });
+      (this.mediaPosted = await true), (this.mediaCreated = await false);
+
+
+      // Calling the posting quota limit for knowing the new number
+      await this.quotaLimitCheck()
+    },
+
+    async quotaLimitCheck() {
+      this.quotaLimit = ""
+      let url = await new URL(
+        "https://graph.facebook.com/v10.0/17841446016764337/content_publishing_limit"
+      );
+      url.search = new URLSearchParams({
+        access_token: this.access_token,
+      });
+      await fetch(url, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log("response ", response);
+          this.quotaLimit = response.data[0].quota_usage;
+        });
+      await console.log("quota limit: ", this.quotaLimit);
     },
   },
 };
