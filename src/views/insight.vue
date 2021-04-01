@@ -2,7 +2,9 @@
   <div class="container">
     <h1>Insight Page</h1>
     <div v-if="isbrandInfosloaded" class="brand_infos">
-      <div class="logo"><img :src="brandInfo.profile_picture_url" alt="" /></div>
+      <div class="logo">
+        <img :src="brandInfo.profile_picture_url" alt="" />
+      </div>
       <div class="brandInfo">
         <div class="name">
           <h2>{{ brandInfo.name }}</h2>
@@ -57,6 +59,7 @@ export default {
       uid: "",
       selected: "day",
       brandInfo: "",
+      IgId: "",
     };
   },
 
@@ -73,15 +76,19 @@ export default {
   },
 
   computed: {
-    isbrandInfosloaded () {
-    const nestedLoaded = Object.keys(this.brandInfo).map(key => this.brandInfo[key].length !== 0)
-    return this.brandInfo && nestedLoaded.length !== 0
+    isbrandInfosloaded() {
+      const nestedLoaded = Object.keys(this.brandInfo).map(
+        (key) => this.brandInfo[key].length !== 0
+      );
+      return this.brandInfo && nestedLoaded.length !== 0;
     },
 
-    isInsightInfosloaded () {
-    const nestedLoaded = Object.keys(this.brandMetrics).map(key => this.brandMetrics[key].length !== 0)
-    return this.brandMetrics && nestedLoaded.length !== 0
-    }
+    isInsightInfosloaded() {
+      const nestedLoaded = Object.keys(this.brandMetrics).map(
+        (key) => this.brandMetrics[key].length !== 0
+      );
+      return this.brandMetrics && nestedLoaded.length !== 0;
+    },
   },
 
   methods: {
@@ -92,10 +99,11 @@ export default {
         .get()
         .then((doc) => {
           this.access_token = doc.data().access_token;
+          this.IgId = doc.data().IgId
         });
 
       let url = await new URL(
-        "https://graph.facebook.com/v10.0/17841446016764337/insights"
+        `https://graph.facebook.com/v10.0/${this.IgId}/insights`
       );
       url.search = new URLSearchParams({
         metric: "impressions,reach",
@@ -121,11 +129,10 @@ export default {
           this.access_token = doc.data().access_token;
         });
 
-      let url = await new URL(
-        "https://graph.facebook.com/v10.0/17841446016764337"
-      );
+      let url = await new URL(`https://graph.facebook.com/v10.0/${this.IgId}`);
       url.search = new URLSearchParams({
-        fields: 'ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url',
+        fields:
+          "name,biography,follows_count,followers_count,media_count,profile_picture_url",
         access_token: this.access_token,
       });
       await fetch(url, {
@@ -136,7 +143,7 @@ export default {
           console.log("response ", response);
           this.brandInfo = response;
         });
-    }
+    },
   },
 };
 </script>

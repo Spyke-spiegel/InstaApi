@@ -66,6 +66,7 @@ export default {
       postURL:"",
       posted: false,
       uid:"",
+      IgId:"",
     };
   },
 
@@ -82,10 +83,11 @@ export default {
       .get()
       .then((doc) => {
         this.access_token = doc.data().access_token;
+        this.IgId = doc.data().IgId
       });
 
     let url = await new URL(
-      "https://graph.facebook.com/v10.0/17841446016764337/content_publishing_limit"
+      `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
     );
     url.search = new URLSearchParams({
       access_token: this.access_token,
@@ -136,7 +138,7 @@ export default {
 
         // API call for creating the IG Media
       let url = await new URL(
-        "https://graph.facebook.com/v10.0/17841446016764337/media"
+        `https://graph.facebook.com/v10.0/${this.IgId}/media`
       );
       url.search = new URLSearchParams({
         image_url: this.picURL,
@@ -158,7 +160,7 @@ export default {
       // API Call for publishing the IG Media previously created
 
       let url2 = await new URL(
-        "https://graph.facebook.com/v10.0/17841446016764337/media_publish"
+        `https://graph.facebook.com/v10.0/${this.IgId}/media_publish`
       );
       url2.search = await new URLSearchParams({
         creation_id: this.idMedia,
@@ -203,7 +205,7 @@ export default {
     async quotaLimitCheck() {
       this.quotaLimit = ""
       let url = await new URL(
-        "https://graph.facebook.com/v10.0/17841446016764337/content_publishing_limit"
+        `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
       );
       url.search = new URLSearchParams({
         access_token: this.access_token,

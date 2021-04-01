@@ -25,6 +25,8 @@ export default {
     return {
       fbData: "",
       expires_in: "",
+      access_token: "",
+      fbId: "",
     };
   },
 
@@ -48,32 +50,32 @@ export default {
           // let credential = result.credential;
           // var user = result.user;
           // var accessToken = credential.accessToken;
-
+          console.log(result)
           this.fbData = result;
           // this.$router.replace({name: 'login'})
         })
         .catch((error) => {
           alert(error);
         });
-      await console.log(this.fbData.user.uid);
       let url = await new URL(
         "https://graph.facebook.com/v10.0/oauth/access_token"
       );
-      url.search = new URLSearchParams({
+      url.search = await new URLSearchParams({
         grant_type: "fb_exchange_token",
         client_id: "273708304202650",
         client_secret: "daa2c101a805d31265963875c8912402",
         fb_exchange_token: this.fbData.credential.accessToken,
       });
-      fetch(url, {
+      await fetch(url, {
         method: "GET",
       })
         .then((res) => res.json())
         .then((response2) => {
           if (response2.expires_in) {
             this.expires_in = response2.expires_in;
-          }
-          console.log("response 2 ", response2);
+          };
+          console.log(response2)
+          this.access_token = response2.access_token;
           db.collection("Users").doc(this.fbData.user.uid).set({
             access_token: response2.access_token,
             expires_in: this.expires_in,
@@ -82,11 +84,47 @@ export default {
             email: this.fbData.user.email,
           });
         });
+
+        await this.InstagramID();
     },
 
     logout() {
       firebase.auth().signOut().then(alert("you are logged out"));
     },
+
+   async InstagramID() {
+     console.log("accessToken : ", this.access_token)
+     let url = await new URL(
+        "https://graph.facebook.com/v10.0/me/accounts"
+      );
+      url.search = await new URLSearchParams({
+        access_token: this.access_token,
+      });
+      await fetch(url, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(response.data[0].id)
+          this.fbId = response.data[0].id
+        });
+
+        let url1 = await new URL(
+        `https://graph.facebook.com/v10.0/${this.fbId}`
+      );
+      url1.search = await new URLSearchParams({
+        fields: "instagram_business_account",
+        access_token: this.access_token,
+      });
+      await fetch(url1, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response2) => {
+        db.collection("Users").doc(this.fbData.user.uid).update({
+            IgId: response2.instagram_business_account.id})
+        });
+    }
   },
 };
 </script>

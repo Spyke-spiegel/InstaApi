@@ -31,13 +31,7 @@
                 <img :src="doc.media_url" class="image" />
               </div>
               <div class="test" v-else>
-                <video
-                  controls
-                  muted
-                  poster
-                  :src="doc.media_url"
-
-                ></video>
+                <video controls muted poster :src="doc.media_url"></video>
               </div>
               <div class="likeComment">
                 <i class="far fa-heart">
@@ -60,7 +54,7 @@
 
 <script>
 import { db } from "../config/firebaseInit";
-import firebase from 'firebase'
+import firebase from "firebase";
 
 export default {
   name: "brandPage",
@@ -69,10 +63,11 @@ export default {
       posts: {},
       access_token: "",
       uid: "",
+      IgId: ""
     };
   },
 
-   async created() {
+  async created() {
     await firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.uid = user.uid;
@@ -80,10 +75,8 @@ export default {
       }
     });
 
-      await this.queryInstaData();
+    await this.queryInstaData();
   },
-
-
 
   methods: {
     async queryInstaData() {
@@ -95,10 +88,10 @@ export default {
         .get()
         .then((doc) => {
           this.access_token = doc.data().access_token;
-          console.log("access token : ", doc.data().access_token)
+          this.IgId = doc.data().IgId;
         });
       //   await console.log("test access token : ", this.access_token);
-      let url = new URL("https://graph.facebook.com/v10.0/17841446016764337/");
+      let url = new URL(`https://graph.facebook.com/v10.0/${this.IgId}/`);
       url.search = new URLSearchParams({
         fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type,permalink}}`,
         access_token: this.access_token,

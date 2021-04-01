@@ -47,6 +47,7 @@ export default {
       listBrand: [],
       access_token: "",
       uid: "",
+      IgId: "",
     };
   },
 
@@ -84,11 +85,12 @@ export default {
         .then((doc) => {
           console.log(doc.data())
           this.access_token = doc.data().access_token;
+          this.IgId = doc.data().IgId
         });
       await this.brand.forEach((i) => {
         // console.log("test brand : ", i);
         let url = new URL(
-          "https://graph.facebook.com/v10.0/17841446016764337/"
+          `https://graph.facebook.com/v10.0/${this.IgId}/`
         );
         url.search = new URLSearchParams({
           fields: `business_discovery.username(${i}){ig_id,name,username,followers_count,media_count,profile_picture_url}`,
