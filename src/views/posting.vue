@@ -23,21 +23,12 @@
     />
     <div>{{ hashtags }}</div>
     <button v-on:click="publishIGMedia">Publish to IG</button>
-    <div v-if="mediaCreated == true && mediaPosted == false">
-      <h2>The media have been created and is now posting</h2>
-    </div>
-    <div v-else-if="mediaPosted == true && mediaCreated == false">
-      <h2>The media has been posted, go check Instagram</h2>
-    </div>
-    <div
-      v-else-if="
-        loading == true && mediaCreated == false && mediaPosted == false
-      "
-    >
-      <h2>Loading ...</h2>
-      <div v-if="posted == true">
-        <a :href="postURL" target="_blank" rel="noopener noreferrer">Link to the Instagram Post</a>
-      </div>
+    <h2 class="loadingMessage" v-if="message">{{ message }}</h2>
+
+    <div v-if="posted">
+      <a :href="postURL" target="_blank" rel="noopener noreferrer"
+        >Link to the Instagram Post</a
+      >
     </div>
   </div>
 </template>
@@ -45,11 +36,12 @@
 <script>
 import { storage } from "../config/firebaseInit";
 import { db } from "../config/firebaseInit";
-import firebase from 'firebase'
+import firebase from "firebase";
 export default {
   name: "posting",
   data() {
     return {
+      message: "",
       barValue: 0,
       uploader: "",
       picURL: "",
@@ -63,10 +55,10 @@ export default {
       errorIgMsg: "",
       loading: false,
       postID: "",
-      postURL:"",
+      postURL: "",
       posted: false,
-      uid:"",
-      IgId:"",
+      uid: "",
+      IgId: "",
     };
   },
 
@@ -83,7 +75,7 @@ export default {
       .get()
       .then((doc) => {
         this.access_token = doc.data().access_token;
-        this.IgId = doc.data().IgId
+        this.IgId = doc.data().IgId;
       });
 
     let url = await new URL(
@@ -105,6 +97,9 @@ export default {
 
   methods: {
     async upload(e) {
+      this.message = await ""
+      this.posted = await false;
+      this.postURL = await ""
       var vm = this;
       var file = e.target.files[0];
       var storageRef = storage.ref("picture/" + file.name);
@@ -132,11 +127,9 @@ export default {
     },
 
     async publishIGMedia() {
-      (this.mediaCreated = await false),
-        (this.mediaPosted = await false),
-        (this.loading = await true);
+      this.message = "loading";
 
-        // API call for creating the IG Media
+// API call for creating the IG Media
       let url = await new URL(
         `https://graph.facebook.com/v10.0/${this.IgId}/media`
       );
@@ -154,8 +147,7 @@ export default {
           console.log("response ", response);
           this.idMedia = response.id;
         });
-      (this.mediaCreated = await true), (this.loading = await false);
-
+      this.message = await "The media have been created and is now posting";
 
       // API Call for publishing the IG Media previously created
 
@@ -173,16 +165,16 @@ export default {
         .then((res) => res.json()) /*  */
         .then((response) => {
           console.log("response ", response);
-          this.postID = response.id
+          this.postID = response.id;
         });
 
-        // API Call fopr retrieving the URL of the Post created
+      // API Call fopr retrieving the URL of the Post created
 
-        let url3 = await new URL(
+      let url3 = await new URL(
         `https://graph.facebook.com/v10.0/${this.postID}`
       );
       url3.search = await new URLSearchParams({
-        fields:"permalink",
+        fields: "permalink",
         access_token: this.access_token,
       });
 
@@ -192,18 +184,17 @@ export default {
         .then((res) => res.json()) /*  */
         .then((response) => {
           console.log("response post URL : ", response.permalink);
-          this.postURL = response.permalink
-          
+          this.postURL = response.permalink;
         });
-      (this.mediaPosted = await true), (this.mediaCreated = await false), (this.posted = true);
-
+      this.message = await "The media has been posted, go check Instagram";
+      this.posted = await true;
 
       // Calling the posting quota limit for knowing the new number
-      await this.quotaLimitCheck()
+      await this.quotaLimitCheck();
     },
 
     async quotaLimitCheck() {
-      this.quotaLimit = ""
+      this.quotaLimit = "";
       let url = await new URL(
         `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
       );

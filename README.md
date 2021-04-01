@@ -1,4 +1,4 @@
-# instapi
+# instHappy
 
 ## Project setup
 ```

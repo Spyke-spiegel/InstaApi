@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <div class="grid">
+    <div v-if="ispostsloaded" class="grid">
       <ul v-for="doc in posts.media.data">
         <div class="card">
           <a :href="doc.permalink" target="blank">
@@ -76,6 +76,15 @@ export default {
     });
 
     await this.queryInstaData();
+  },
+
+  computed: {
+    ispostsloaded() {
+      const nestedLoaded = Object.keys(this.posts).map(
+        (key) => this.posts[key].length !== 0
+      );
+      return this.posts && nestedLoaded.length !== 0;
+    }
   },
 
   methods: {
