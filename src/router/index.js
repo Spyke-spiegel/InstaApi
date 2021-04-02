@@ -5,6 +5,7 @@ import brandManager from '../views/brandManager.vue'
 import brandPage from '../views/brandPage.vue'
 import posting from '../views/posting.vue'
 import insight from '../views/insight.vue'
+import detailInsight from '../views/detailInsight.vue'
 
 import firebase from 'firebase';
 import "firebase/auth";
@@ -47,6 +48,12 @@ const routes = [
     path: '/insight',
     name: 'insight',
     component: insight,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/detailInsight/:id',
+    name: 'detailInsight',
+    component: detailInsight,
     meta: {requiresAuth: true}
   },
   

@@ -44,43 +44,45 @@
     </div>
     <div class="testMedia">
       <button v-on:click="QueryPostInsight">test Post</button>
-     <div class="grid">
-      <ul v-for="doc in listMediaInsight">
-        <div class="card">
-          <a :href="doc.permalink" target="blank">
-            <div class="imgCard">
-              <div
-                class="test"
-                v-if="
-                  doc.media_type == 'IMAGE' ||
-                  doc.media_type == 'CAROUSEL_ALBUM'
-                "
-              >
-                <img :src="doc.media_url" class="image" />
-              </div>
-              <div class="test" v-else>
-                <video controls muted poster :src="doc.media_url"></video>
-              </div>
-              <div class="likeComment">
-                <i class="far fa-heart">
-                  <div class="txt">{{ doc.like_count }}</div>
-                </i>
-                <i class="far fa-comment"
-                  ><div class="txt">{{ doc.comments_count }}</div></i
+      <div class="grid">
+        <ul v-for="doc in listMediaInsight">
+          <div class="card">
+            <router-link
+              class="link"
+              v-bind:to="{ name: 'detailInsight', params: { id: doc.id } }"
+            >
+              <div class="imgCard">
+                <div
+                  class="test"
+                  v-if="
+                    doc.media_type == 'IMAGE' ||
+                    doc.media_type == 'CAROUSEL_ALBUM'
+                  "
                 >
-                
+                  <img :src="doc.media_url" class="image" />
+                </div>
+                <div class="test" v-else>
+                  <video controls muted poster :src="doc.media_url"></video>
+                </div>
+                <div class="likeComment">
+                  <i class="far fa-heart">
+                    <div class="txt">{{ doc.like_count }}</div>
+                  </i>
+                  <i class="far fa-comment"
+                    ><div class="txt">{{ doc.comments_count }}</div></i
+                  >
+                </div>
+                <div class="imp">impressions : {{ doc.impressions }}</div>
+                <div class="reach">reach : {{ doc.reach }}</div>
+                <div class="eng">engagement : {{ doc.engagement }}</div>
+                <div class="secondcolumn">
+                  <span>{{ doc.timestamp }}</span>
+                </div>
               </div>
-              <div class="imp">impressions : {{doc.impressions}}</div>
-                <div class="reach">reach : {{doc.reach}}</div>
-                <div class="eng">engagement : {{doc.engagement}}</div>
-              <div class="secondcolumn">
-                <span>{{doc.timestamp}}</span>
-              </div>
-            </div>
-          </a>
-        </div>
-      </ul>
-    </div>
+            </router-link>
+          </div>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -201,10 +203,10 @@ export default {
     },
 
     async QueryPostInsight() {
-      let res1 = {}
-      let res2 = {}
-      let tempId = []
-      let test = []
+      let res1 = {};
+      let res2 = {};
+      let tempId = [];
+      let test = [];
       let listMedia = [];
       let url = await new URL(
         `https://graph.facebook.com/v10.0/${this.IgId}/media`
@@ -222,7 +224,6 @@ export default {
           }
         });
       for (const x of listMedia) {
-
         //Querry the insight for each IG-Media
         let url = await new URL(
           `https://graph.facebook.com/v10.0/${x}/insights`
@@ -237,17 +238,15 @@ export default {
           .then((res) => res.json())
           .then((response) => {
             tempId = response.data[0].id.split("/");
-              res1 = response
+            res1 = response;
           });
 
+        //query Pics and Info for each IG-Media
 
-          //query Pics and Info for each IG-Media
-          
-          let url2 = await new URL(
-          `https://graph.facebook.com/v10.0/${x}`
-        );
+        let url2 = await new URL(`https://graph.facebook.com/v10.0/${x}`);
         url2.search = new URLSearchParams({
-          fields: "media_url,timestamp,media_product_type,media_type,like_count,comments_count",
+          fields:
+            "media_url,timestamp,media_product_type,media_type,like_count,comments_count",
           access_token: this.access_token,
         });
         await fetch(url2, {
@@ -255,25 +254,25 @@ export default {
         })
           .then((res) => res.json())
           .then((response2) => {
-            res2 = response2
+            res2 = response2;
           });
-            test.push({
-              media_url: res2.media_url,
-              timestamp: res2.timestamp,
-              media_product_type: res2.media_product_type,
-              media_type: res2.media_type,
-              like_count: res2.like_count,
-              comments_count: res2.comments_count,
-              id: tempId[0],
-              engagement: res1.data[0].values[0].value,
-              impressions: res1.data[1].values[0].value,
-              reach: res1.data[2].values[0].value,
-              saved: res1.data[3].values[0].value,
-            });
+        test.push({
+          media_url: res2.media_url,
+          timestamp: res2.timestamp,
+          media_product_type: res2.media_product_type,
+          media_type: res2.media_type,
+          like_count: res2.like_count,
+          comments_count: res2.comments_count,
+          id: tempId[0],
+          engagement: res1.data[0].values[0].value,
+          impressions: res1.data[1].values[0].value,
+          reach: res1.data[2].values[0].value,
+          saved: res1.data[3].values[0].value,
+        });
       }
-      this.listMediaInsight = await test 
+      this.listMediaInsight = await test;
       await console.log(this.listMediaInsight);
-      return test
+      return test;
     },
   },
 };
