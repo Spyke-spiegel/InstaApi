@@ -6,6 +6,10 @@ import brandPage from '../views/brandPage.vue'
 import posting from '../views/posting.vue'
 import insight from '../views/insight.vue'
 import detailInsight from '../views/detailInsight.vue'
+import postingImage from '../views/Posting Page/postingImage.vue'
+import postingVideo from '../views/Posting Page/postingVideo.vue'
+import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
+
 
 import firebase from 'firebase';
 import "firebase/auth";
@@ -54,6 +58,24 @@ const routes = [
     path: '/detailInsight/:id',
     name: 'detailInsight',
     component: detailInsight,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/posting/image',
+    name: 'postingImage',
+    component: postingImage,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/posting/video',
+    name: 'postingVideo',
+    component: postingVideo,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/posting/schedule',
+    name: 'schedulePosting',
+    component: schedulePosting,
     meta: {requiresAuth: true}
   },
   
