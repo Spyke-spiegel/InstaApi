@@ -9,6 +9,7 @@ import detailInsight from '../views/detailInsight.vue'
 import postingImage from '../views/Posting Page/postingImage.vue'
 import postingVideo from '../views/Posting Page/postingVideo.vue'
 import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
+import hashtag from '../views/hashtag.vue'
 
 
 import firebase from 'firebase';
@@ -76,6 +77,12 @@ const routes = [
     path: '/posting/schedule',
     name: 'schedulePosting',
     component: schedulePosting,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/hashtag',
+    name: 'hashtag',
+    component: hashtag,
     meta: {requiresAuth: true}
   },
   

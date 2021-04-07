@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h1>Schedule Posting</h1>
-    <div class="container">
+    <div class="postingBlock">
       <h1>Posting Page</h1>
       <div v-if="barValue == 100">
         <img :src="picURL" id="preview" />
@@ -16,10 +16,19 @@
         placeholder="add your hashtags"
         id="postText"
       />
-
-      <datetime type="datetime" v-model="postDate" use24-hour class="theme-orange"></datetime>
+      <input type="date" v-model="postDate" />
+      <input type="time" v-model="postTime" />
+      <div>{{ timetest }}</div>
       <div>{{ hashtags }}</div>
       <button v-on:click="CreateSchedule">Create a schedule</button>
+    </div>
+    <div class="listSchedule">
+      <ul class="list" v-for="doc in listSchedule">
+        <div class="date">{{ new Date(doc.postdate.seconds) }}</div>
+        <div class="hashtag">{{ doc.hashtags }}</div>
+        <img class="imgSchedule" :src="doc.picURL" />
+        <button v-on:click="deleteSchedule(doc.id)">X</button>
+      </ul>
     </div>
   </div>
 </template>
@@ -28,7 +37,6 @@
 import { db } from "../../config/firebaseInit";
 import { storage } from "@/config/firebaseInit";
 import firebase from "firebase";
-import {Datetime}  from 'vue-datetime';
 export default {
   name: "schedulePost",
   data() {
@@ -43,8 +51,10 @@ export default {
       message: "",
       barValue: 0,
       postDate: "",
+      postTime: "",
       hashtags: "",
       uploader: "",
+      timetest: "",
     };
   },
 
@@ -65,17 +75,20 @@ export default {
       });
 
     let sheduleList = await db
-      .collection("Users")
-      .doc(this.uid)
-      .collection("schedule")
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          this.listSchedule.push(doc.data());
-          console.log(doc.id, " => ", doc.data());
-        });
-      });
+      .collection("schedulePost")
+      .where("user", "==", this.uid)
+      .get();
+    if (sheduleList.empty) {
+      console.log("No matching documents.");
+      return;
+    }
+
+    sheduleList.forEach((doc) => {
+      console.log(doc.data());
+      var tempData = doc.data();
+      tempData.id = doc.id;
+      this.listSchedule.push(tempData);
+    });
   },
 
   methods: {
@@ -110,20 +123,33 @@ export default {
       // this.message = await "";
       // this.posted = await false;
       // this.postURL = await "";
-
-      let saveDb = await db
-        .collection("Users")
-        .doc(this.uid)
-        .collection("schedule")
-        .add({
-          picURL: this.picURL,
-          message: this.message,
-          postdate: this.postDate,
-          hashtags: this.hashtags,
-        });
+      this.timetest = this.postDate.concat(" ", this.postTime);
+      var dateMs = Date.parse(this.timetest);
+      var date = new Date(dateMs);
+      let saveDb = await db.collection("schedulePost").add({
+        user: this.uid,
+        picURL: this.picURL,
+        message: this.message,
+        postdate: date,
+        hashtags: this.hashtags,
+      });
     },
 
-    async deleteSchedule() {},
+    async deleteSchedule(id) {
+      console.log(id);
+      db.collection("schedulePost")
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+        })
+        .catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+      let deleteId = this.listSchedule.findIndex((x) => x.id === id);
+      this.listSchedule.splice(deleteId, 1);
+      console.log(this.listSchedule);
+    },
 
     async updateSchedule() {},
   },
@@ -136,15 +162,14 @@ export default {
   height: auto;
 }
 
-.theme-orange .vdatetime-popup__header,
-.theme-orange .vdatetime-calendar__month__day--selected > span > span,
-.theme-orange .vdatetime-calendar__month__day--selected:hover > span > span {
-  background: #FF9800;
+.imgSchedule {
+  height: 10vh;
+  width: auto;
 }
 
-.theme-orange .vdatetime-year-picker__item--selected,
-.theme-orange .vdatetime-time-picker__item--selected,
-.theme-orange .vdatetime-popup__actions__button {
-  color: #ff9800;
+.list {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr ;
+  grid-template-rows: 1fr;
 }
 </style>

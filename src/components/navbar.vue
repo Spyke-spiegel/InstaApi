@@ -12,6 +12,7 @@
         |
         <router-link to="/brandManager">Brand Manager</router-link>|
         <router-link to="/posting">Posting</router-link> |
+        <router-link to="/hashtag">hashtag</router-link> |
         <router-link to="/login">Login</router-link>
       </div>
       <div class="loginInfo">
