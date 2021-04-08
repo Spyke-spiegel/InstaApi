@@ -4,6 +4,7 @@ import router from './router'
 import firebase from 'firebase/app';
 
 
+
 let app; 
 
 firebase.auth().onAuthStateChanged(user => {

@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <router-link to="/"><i class="fas fa-arrow-circle-left"></i></router-link>
     <div class="brand_infos">
       <div class="logo"><img :src="posts.profile_picture_url" alt="" /></div>
       <div class="brandInfo">
@@ -132,17 +131,22 @@ export default {
   /* gap: 1rem */
 }
 .grid > ul > div {
-  background: #a8afac;
+  background: #e7c28a;
   padding: 1.5rem;
   border-radius: 1rem;
 }
+
+.grid > ul > div > i {
+  color: white;
+}
+
 .image {
   height: 15vh;
 }
 video {
   /* height: 15vh; */
   width: 100%;
-  height: 100%;
+  height: 15vh;
 }
 .card {
   display: flex;
@@ -172,6 +176,7 @@ a {
 
 .logo > img {
   height: 10vh;
+  border-radius: 50%;
 }
 
 .brand_infos {
@@ -179,6 +184,7 @@ a {
   flex-flow: row wrap;
   width: 100%;
   justify-content: center;
+  margin: 30px 0 30px 0;
 }
 .brandInfo {
   display: flex;
@@ -186,6 +192,7 @@ a {
   width: 50vw;
   align-items: center;
   justify-content: center;
+    margin: 0 30px 0 30px
 }
 
 .stat {

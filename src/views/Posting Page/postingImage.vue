@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Posting Page</h1>
+    <h1>Image Posting</h1>
     <h2>number of posts send : {{ quotaLimit }} of 25</h2>
     <div v-if="barValue == 100">
       <img :src="picURL" id="preview" />

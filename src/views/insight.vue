@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Insight Page</h1>
+    <h1 class="title">Insight Page</h1>
     <div v-if="isbrandInfosloaded" class="brand_infos">
       <div class="logo">
         <img :src="brandInfo.profile_picture_url" alt="" />
@@ -17,20 +17,19 @@
       </div>
     </div>
     <div v-if="isInsightInfosloaded" class="brandMetrics">
-      <select v-model="selected" v-on:change="queryInsight">
+      <select v-model="selected" v-on:change="queryInsight" class="selDropDown">
         <option disabled value="">Select the period</option>
         <option>day</option>
         <option>week</option>
         <option>days_28</option>
       </select>
-      <span>Sélectionné : {{ selected }}</span>
-      <div class="metrtic">
-        <div>
+    
+        <div class="impression">
           <h1 class="number">{{ brandMetrics[0].values[0].value }}</h1>
           <div class="period">period : {{ brandMetrics[0].period }}</div>
           <div class="metrics">Metrics : {{ brandMetrics[0].name }}</div>
         </div>
-        <div>
+        <div class="reach">
           <h1 class="number">{{ brandMetrics[1].values[0].value }}</h1>
           <div class="period">period : {{ brandMetrics[1].period }}</div>
           <div class="metrics">Metrics : {{ brandMetrics[1].name }}</div>
@@ -40,7 +39,7 @@
         <div class="period">period : {{ brandMetrics[2].period }}</div>
         <div class="metrics">Metrics : {{ brandMetrics[2].name }}</div>
       </div> -->
-      </div>
+      
     </div>
     <div class="testMedia">
       <div class="grid">
@@ -259,7 +258,7 @@ export default {
   /* gap: 1rem */
 }
 .grid > ul > div {
-  background: #a8afac;
+  background: #e7c28a;
   padding: 1.5rem;
   border-radius: 1rem;
 }
@@ -297,7 +296,36 @@ a {
   color: black;
 }
 
-/* .logo > img {
-  height: 10vh;
-} */
+.title{
+  padding: 30px 0 30px 0;
+}
+
+.brandMetrics {
+  margin: 30px 0 30px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  align-items: center;
+  justify-items: center;
+}
+
+.selDropDown {
+  width: 30%;
+  height: 30%;
+  grid-column-start: 3;
+}
+
+.selected {
+  grid-column-start: 3;
+}
+
+.impression {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+.reach {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
 </style>
