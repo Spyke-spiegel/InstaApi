@@ -150,13 +150,14 @@ export default {
           console.log("response ", response);
           this.idMedia = response.id;
         })
-        .catch((err) => {
-          alert(err);
-        });
+        // .catch((err) => {
+        //   alert(err);
+        // });
       this.message = await "The media have been created and is now posting";
       await this.publishIGMedia();
 
-      // API Call for publishing the IG Media previously created
+      //adding the hashtag in the first comment
+      await this.postFirstComment();
       
       // Calling the posting quota limit for knowing the new number
       await this.quotaLimitCheck();
@@ -177,9 +178,9 @@ export default {
         .then((response) => {
           this.quotaLimit = response.data[0].quota_usage;
         })
-        .catch((err) => {
-          alert(err);
-        });
+        // .catch((err) => {
+        //   alert(err);
+        // });
       await console.log("quota limit: ", this.quotaLimit);
     },
 
@@ -201,9 +202,9 @@ export default {
           console.log("response ", response);
           this.postID = response.id;
         })
-        .catch((err) => {
-          alert(err);
-        });
+        // .catch((err) => {
+        //   alert(err);
+        // });
 
       // API Call fopr retrieving the URL of the Post created
 
@@ -224,12 +225,36 @@ export default {
           console.log("response post URL : ", response.permalink);
           this.postURL = response.permalink;
         })
-        .catch((err) => {
-          alert(err);
-        });
+        // .catch((err) => {
+        //   alert(err);
+        // });
       this.message = await "The media has been posted, go check Instagram";
       this.posted = await true;
 
+    },
+
+    async postFirstComment() {
+      if (this.firstComment != "") {
+        let url2 = await new URL(
+          `https://graph.facebook.com/v10.0/${this.postID}/comments`
+        );
+        url2.search = await new URLSearchParams({
+          message: this.firstComment,
+          access_token: this.access_token,
+        });
+
+        await fetch(url2, {
+          method: "POST",
+        })
+          .then(this.status)
+          .then((res) => res.json()) /*  */
+          .then((response) => {
+            console.log("response ", response);
+            this.postID = response.id;
+          });
+      } else {
+        console.log("No comment to add")
+      }
     },
 
     status(res) {

@@ -1,27 +1,29 @@
 <template>
   <div class="container">
-    <h1>Image Posting</h1>
+    <h1 class="title">Image Posting</h1>
     <h2>number of posts send : {{ quotaLimit }} of 25</h2>
     <div v-if="barValue == 100">
       <img :src="picURL" id="preview" />
     </div>
     <div v-else>
-      <progress :value="barValue" max="100" :ref="uploader">0%</progress>
+      <progress class="loadingBar" :value="barValue" max="100" :ref="uploader">
+        0%
+      </progress>
     </div>
     <input type="file" v-on:change="upload" id="fileButton" />
     <input
       type="text"
-      v-model="hashtags"
-      placeholder="add your hashtags"
+      v-model="postMessage"
+      placeholder="add your the content of your post"
       id="postText"
     />
     <input
       type="text"
-      v-model="caption"
-      placeholder="add your caption"
+      v-model="firstComment"
+      placeholder="add the hashtag that you wisxh to add as the first comment"
       id="postText"
     />
-    <div>{{ hashtags }}</div>
+    <div>{{ firstComment }}</div>
     <button v-on:click="publishIGMedia">Publish to IG</button>
     <h2 class="loadingMessage" v-if="message">{{ message }}</h2>
 
@@ -30,6 +32,8 @@
         >Link to the Instagram Post</a
       >
     </div>
+
+    <button v-on:click="postFirstComment">test comment</button>
   </div>
 </template>
 
@@ -47,7 +51,7 @@ export default {
       picURL: "",
       access_token: "",
       idMedia: "",
-      hashtags: "",
+      postMessage: "",
       caption: "",
       quotaLimit: "",
       mediaCreated: false,
@@ -59,6 +63,7 @@ export default {
       posted: false,
       uid: "",
       IgId: "",
+      firstComment: "",
     };
   },
 
@@ -135,7 +140,7 @@ export default {
       );
       url.search = new URLSearchParams({
         image_url: this.picURL,
-        caption: this.hashtags,
+        caption: this.postMessage,
         access_token: this.access_token,
       });
 
@@ -147,10 +152,10 @@ export default {
         .then((response) => {
           console.log("response ", response);
           this.idMedia = response.id;
-        })
-        .catch((err) => {
-          alert(err);
         });
+      // .catch((err) => {
+      //   alert(err);
+      // });
       this.message = await "The media have been created and is now posting";
 
       // API Call for publishing the IG Media previously created
@@ -171,10 +176,10 @@ export default {
         .then((response) => {
           console.log("response ", response);
           this.postID = response.id;
-        })
-        .catch((err) => {
-          alert(err);
         });
+      // .catch((err) => {
+      //   alert(err);
+      // });
 
       // API Call fopr retrieving the URL of the Post created
 
@@ -194,15 +199,42 @@ export default {
         .then((response) => {
           console.log("response post URL : ", response.permalink);
           this.postURL = response.permalink;
-        })
-        .catch((err) => {
-          alert(err);
         });
+      // .catch((err) => {
+      //   alert(err);
+      // });
       this.message = await "The media has been posted, go check Instagram";
       this.posted = await true;
 
+      //Method for adding hashtag fvor the first comment
+      await this.postFirstComment();
+
+
+
       // Calling the posting quota limit for knowing the new number
       await this.quotaLimitCheck();
+    },
+
+    async postFirstComment() {
+      if (this.firstComment != "") {
+        let url2 = await new URL(
+          `https://graph.facebook.com/v10.0/${this.postID}/comments`
+        );
+        url2.search = await new URLSearchParams({
+          message: this.firstComment,
+          access_token: this.access_token,
+        });
+
+        await fetch(url2, {
+          method: "POST",
+        })
+          .then((res) => res.json()) /*  */
+          .then((response) => {
+            console.log("response ", response);
+          });
+      } else {
+        console.log("No comment to add")
+      }
     },
 
     async quotaLimitCheck() {
@@ -219,10 +251,10 @@ export default {
         .then((res) => res.json())
         .then((response) => {
           this.quotaLimit = response.data[0].quota_usage;
-        })
-        .catch((err) => {
-          alert(err);
         });
+      // .catch((err) => {
+      //   alert(err);
+      // });
       await console.log("quota limit: ", this.quotaLimit);
     },
 
@@ -241,5 +273,12 @@ export default {
 #preview {
   width: 50%;
   height: auto;
+}
+
+.loadingBar {
+  margin: 150px;
+}
+
+.title {
 }
 </style>
