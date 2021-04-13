@@ -2,8 +2,16 @@
   <div class="container">
     <h1>hashtag page</h1>
     <input type="text" name="" v-model="searchHash" id="" />
-    <button v-on:click="searchHashtagID">test Hash</button>
+    <button v-on:click="addHash">add HashTag#</button>
 
+    <ul v-for="hash in listHash">
+      <div class="delBtn">
+        <button v-on:click="searchHashtagID(hash.hash)">{{ hash.hash }}</button>
+        <button v-on:click="deleteHash(hash.hash)">X</button>
+      </div>
+    </ul>
+
+    <button v-on:click="sortinghightolow">sort comment</button>
 
     <div class="grid">
       <ul v-for="doc in listpostHash">
@@ -38,8 +46,6 @@
         </div>
       </ul>
     </div>
-
-
   </div>
 </template>
 
@@ -52,11 +58,13 @@ export default {
   data() {
     return {
       access_token: "",
+      uid: "",
       IgId: "",
       hashID: "",
       searchHash: "",
       user_id: "",
       listpostHash: [],
+      listHash: [],
     };
   },
 
@@ -75,16 +83,29 @@ export default {
         this.access_token = doc.data().access_token;
         this.IgId = doc.data().IgId;
       });
+
+    let listHashfollow = await db
+      .collection("Users")
+      .doc(this.uid)
+      .collection("HashTag")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          this.listHash.push(doc.data());
+          console.log(doc.id, " => ", doc.data());
+        });
+      });
   },
 
   methods: {
-    async searchHashtagID() {
+    async searchHashtagID(id) {
       let url = await new URL(
         `https://graph.facebook.com/v10.0/ig_hashtag_search`
       );
       url.search = new URLSearchParams({
         user_id: this.IgId,
-        q: this.searchHash,
+        q: id,
         access_token: this.access_token,
       });
 
@@ -98,14 +119,13 @@ export default {
           this.hashID = response.data[0].id;
         });
 
-
-
       let url2 = await new URL(
         `https://graph.facebook.com/v10.0/${this.hashID}/top_media`
       );
       url2.search = new URLSearchParams({
         user_id: this.IgId,
-        fields: "caption,children,comments_count,id,like_count,media_type,media_url,permalink,timestamp",
+        fields:
+          "caption,children,comments_count,id,like_count,media_type,media_url,permalink,timestamp",
         access_token: this.access_token,
       });
 
@@ -115,8 +135,47 @@ export default {
         .then((res) => res.json())
         .then((response) => {
           console.log("response ", response);
-          this.listpostHash = response.data
+          this.listpostHash = response.data;
         });
+    },
+
+    async addHash() {
+      if (this.listHash.some((i) => i.hash === this.searchHash) == false) {
+        console.log("test1");
+        this.listHash.push({ hash: this.searchHash });
+        db.collection("Users")
+          .doc(this.uid)
+          .collection("HashTag")
+          .doc(this.searchHash)
+          .set({
+            hash: this.searchHash,
+          })
+          .then(console.log("test"))
+          .catch((err) => console.log(err));
+      }
+    },
+
+    async deleteHash(id) {
+      console.log(id);
+      db.collection("Users")
+        .doc(this.uid)
+        .collection("HashTag")
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+        })
+        .catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+      let deleteId = this.listHash.findIndex((x) => x.hash === id);
+      this.listHash.splice(deleteId, 1);
+      console.log(this.listHash);
+    },
+
+    sortinghightolow() {
+      this.listpostHash.comments_count.sort((a, b) => b - a);
+      console.log(this.listpostHash);
     },
   },
 };
