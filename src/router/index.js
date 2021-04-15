@@ -10,7 +10,7 @@ import postingImage from '../views/Posting Page/postingImage.vue'
 import postingVideo from '../views/Posting Page/postingVideo.vue'
 import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
 import hashtag from '../views/hashtag.vue'
-import testHashtag from '../views/testHashtag.vue'
+import hashTagInsight from '../views/hashTagInsight.vue'
 
 
 import firebase from 'firebase';
@@ -87,9 +87,9 @@ const routes = [
     meta: {requiresAuth: true}
   },
   {
-    path: '/test',
-    name: 'testhashtag',
-    component: testHashtag,
+    path: '/hashTagInsight',
+    name: 'hashTagInsight',
+    component: hashTagInsight,
     meta: {requiresAuth: true}
   }, 
   
