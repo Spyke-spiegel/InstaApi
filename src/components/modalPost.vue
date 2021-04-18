@@ -1,9 +1,11 @@
 <template>
-  <div class="container">
-    <div class="overlay"></div>
+  <div v-if="revele" class="container">
+    <div class="overlay" v-on:click="toggleModale"></div>
     <div class="modal">
+      <button class="btnCls" v-on:click="toggleModale">X</button>
       <h2>Je suis un modal</h2>
-      <button class="btnCls">X</button>
+      <div class="image"><img :src="selectedElement.media_url" alt="" /></div>
+      <div class="text">{{ selectedElement.like_count }}</div>
     </div>
   </div>
 </template>
@@ -11,6 +13,27 @@
 <script>
 export default {
   name: "modal",
+  props: {
+    selectedElement: {
+      type: Object,
+      default: () => {},
+    },
+    revele: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  // created() {
+  //   console.log("test modal props id", this.id); //undefined;
+  // },
+
+  methods: {
+    doSomething(post) {
+      console.log(post);
+      //your code here, "post" is the clicked element
+    },
+  },
 };
 </script>
 
@@ -39,14 +62,14 @@ export default {
 }
 
 .modal {
-  background: palevioletred;
+  background: pink;
   position: fixed;
   padding: 50px;
 }
 
 .btnCls {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 </style>

@@ -2,8 +2,8 @@
   <div class="container">
     <div class="navbar">
       <div class="logo">
-         <router-link to="/">
-        <img src="../assets/insthappy.png" class="logo" alt="" />
+        <router-link to="/">
+          <img src="../assets/insthappy.png" class="logo" alt="" />
         </router-link>
       </div>
       <div class="route">
@@ -13,6 +13,7 @@
         <router-link to="/brandManager">Brand Manager</router-link>|
         <router-link to="/posting">Posting</router-link> |
         <router-link to="/hashtag">hashtag</router-link> |
+        <router-link to="/hashTagInsight">Hashtag Insights</router-link> | 
         <router-link to="/login">Login</router-link>
       </div>
       <div class="loginInfo">
@@ -67,26 +68,28 @@ export default {
 .container {
   height: 10vh;
   width: 100vw;
-  background: rgb(251,225,137);
-background: linear-gradient(90deg, rgba(251,225,137,1) 0%, rgba(243,130,129,1) 100%);
+  background: rgb(251, 225, 137);
+  background: linear-gradient(
+    90deg,
+    rgba(251, 225, 137, 1) 0%,
+    rgba(243, 130, 129, 1) 100%
+  );
 }
 
 a {
   font-weight: bold;
   color: #a7381d;
-  
 }
 
 a.router-link-exact-active {
-color: #6C1D09;
+  color: #6c1d09;
 }
 
 .loginInfo {
-  color: #6C1D09;
+  color: #6c1d09;
   align-self: center;
   justify-self: right;
   padding: 20px;
-
 }
 
 .navbar {
@@ -112,6 +115,6 @@ color: #6C1D09;
   grid-column-end: 1;
   height: 100%;
   justify-self: right;
-    align-self: center;
+  align-self: center;
 }
 </style>
