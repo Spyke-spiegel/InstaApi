@@ -3,21 +3,23 @@
     <h1 class="title">Account hashtag insight page</h1>
 
     <div class="listSort">
-      <button v-bind:click="sortOccurence">sort by occurence</button>
-      <button v-bind:click="sortComments">sort by comments</button>
-      <button v-bind:click="sortLike">sort by like</button>
+      <button v-on:click="sortOccurence">sort by occurence</button>
+      <button v-on:click="sortComments">sort by comments</button>
+      <button v-on:click="sortLike">sort by like</button>
+      <button v-on:click="sortByAlphabet">sort by Name</button>
+      <button v-on:click="score">test Score</button>
     </div>
 
     <div class="grid">
-      <ul v-for="(doc, index) in hashcomputed">
+      <ul v-for="(doc, index) in sortedData">
         <div class="card">
           <div class="statHash">
             <h1>#{{ doc.hash }}</h1>
             <div class="occu">Occurence : {{ doc.occurence }}</div>
+            <div class="like">Total Likes : {{doc.totalLikes}}</div>
             <div class="totalcomments">
               Total Comments : {{ doc.totalComments }}
             </div>
-            <div class="totallikes">Total Tag : {{ doc.totalLikes }}</div>
             <div class="totalReach">Total Reach : {{ doc.totalReach }}</div>
             <div class="totallImpr">
               Total Imptressions : {{ doc.totalImpr }}
@@ -26,12 +28,12 @@
           </div>
           <div class="lastPost">
             <ul v-for="post in doc.posts" :key="post.id">
-              <button v-on:click="doSomething(post)" v-bind:id="post.id">
+              <button v-on:click="modalTransmit(post)" v-bind:id="post.id">
                 <modal
                   v-bind:revele="revele"
                   v-bind:selectedElement="selectedElement"
                 ></modal>
-                <div class="post" >
+                <div class="post">
                   <img class="postImage" :src="post.media_url" alt="" />
                 </div>
               </button>
@@ -62,10 +64,20 @@ export default {
       searchHash: "",
       user_id: "",
       hashcomputed: [],
+      sortedData: [],
       revele: false,
       selectedElement: {
         media_url: "",
         like_count: 0,
+        comments_count: 0,
+        id: "",
+        timestamp: "",
+        media_type: "",
+        permalink: "",
+        reach: "",
+        impressions: "",
+        saved: "",
+        access_token: "",
       },
     };
   },
@@ -110,16 +122,25 @@ export default {
   },
 
   methods: {
-    doSomething(post) {
+    modalTransmit(post) {
       this.selectedElement.media_url = post.media_url;
       this.selectedElement.like_count = post.like_count;
+      this.selectedElement.id = post.id;
+      this.selectedElement.timestamp = post.timestamp;
+      this.selectedElement.media_type = post.media_type;
+      this.selectedElement.permalink = post.permalink;
+      this.selectedElement.reach = post.reach;
+      this.selectedElement.impressions = post.impressions;
+      this.selectedElement.saved = post.saved;
+      this.selectedElement.access_token = this.access_token;
+
       this.revele = !this.revele;
     },
 
     async computedData(response) {
       await console.log("start the compute");
       for (let x = 0; x < response.data.length; x++) {
-        await console.log("test insight = ", response.data[x]);
+        // await console.log("test insight = ", response.data[x]);
         if (response.data[x].comments) {
           var tempHash = [];
           tempHash = await response.data[x].comments.data[0].text
@@ -185,7 +206,6 @@ export default {
           await arrReach.push(this.hashcomputed[x].posts[y].reach);
           await arrImpr.push(this.hashcomputed[x].posts[y].impressions);
           await arrSaved.push(this.hashcomputed[x].posts[y].saved);
-          
         }
         this.hashcomputed[x].totalComments = await arrComments.reduce(
           (a, b) => a + b,
@@ -208,7 +228,8 @@ export default {
           0
         );
       }
-      await console.log("log final data design = ", this.hashcomputed);
+      this.sortedData = this.hashcomputed
+      // await console.log("log final data design = ", this.hashcomputed);
     },
 
     async nextPageQuery(next) {
@@ -228,21 +249,82 @@ export default {
         });
     },
 
-    // sortinghightolow() {
-    //   this.listpostHash.comments_count.sort((a, b) => b - a);
-    //   console.log(this.listpostHash);
-    // },
+ 
+    sortByAlphabet() {
+      this.sortedData = []
+      var byName = this.hashcomputed.slice(0);
+      byName.sort(function (a, b) {
+        var x = a.hash.toLowerCase();
+        var y = b.hash.toLowerCase();
+        return x < y ? -1 : x > y ? 1 : 0;
+      });
+
+      console.log("by name:");
+      console.log(byName);
+      this.sortedData = byName
+    },
 
     sortOccurence() {
-      console.log("sort Occurence");
+      this.sortedData = []
+      var byOccurence = this.hashcomputed.slice(0);
+      byOccurence.sort(function (a, b) {
+        return  b.occurence - a.occurence;
+      });
+      console.log("by occurence:");
+      console.log(byOccurence);
+      console.log(this.hashcomputed);
+      this.sortedData = (byOccurence)
     },
 
     sortComments() {
-      console.log("sort comments");
+      this.sortedData = []
+      var bycomment = this.hashcomputed.slice(0);
+      bycomment.sort(function (a, b) {
+        return b.totalComments - a.totalComments ;
+      });
+      console.log("by comment:");
+      console.log(bycomment);
+      console.log(this.hashcomputed);
+      this.sortedData = bycomment
     },
 
     sortLike() {
-      console.log("sort like");
+      this.sortedData = []
+      var byLike = this.hashcomputed.slice(0);
+      byLike.sort(function (a, b) {
+        return  b.totalLikes - a.totalLikes;
+      });
+      console.log("by comment:");
+      console.log(byLike);
+      console.log(this.hashcomputed);
+      this.sortedData = byLike
+    },
+
+    score(){
+      var weightedReach = 2
+      var weightedImpression = 1
+      var weightedSaved = 4
+      var weightedlike = 3
+      var weightedComments = 1
+      var ponderationTime = 4
+      var  ponderationOccurence = 2
+
+      for( var x = 0; x<this.hashcomputed.length; x++){
+        var calculreach = this.hashcomputed[x].totalReach * weightedReach
+        var calculImpression = this.hashcomputed[x].totalImpr * weightedImpression
+        var calculSaved = this.hashcomputed[x].totalSaved * weightedSaved
+        var calculLike = this.hashcomputed[x].totalLikes * weightedlike
+        var calculComments = this.hashcomputed[x].totalComments * weightedComments
+        var score = (calculreach + calculImpression + calculSaved + calculLike + calculComments)/(weightedReach+ weightedImpression + weightedSaved + weightedlike+ weightedComments)
+        console.log("test du score ===========> ", this.hashcomputed[x].hash,  " = ", score )
+        console.log("Reach Point : ", calculreach)
+        console.log("Impression Point : ", calculImpression)
+        console.log("Saved Point : ", calculSaved)
+        console.log("Like Point : ", calculLike)
+        console.log("Comments Point : ", calculComments)
+      }
+
+
     },
   },
 };

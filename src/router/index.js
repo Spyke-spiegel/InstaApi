@@ -11,6 +11,7 @@ import postingVideo from '../views/Posting Page/postingVideo.vue'
 import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
 import hashtag from '../views/hashtag.vue'
 import hashTagInsight from '../views/hashTagInsight.vue'
+import testNU from '../views/testnu.vue'
 
 
 import firebase from 'firebase';
@@ -92,6 +93,14 @@ const routes = [
     component: hashTagInsight,
     meta: {requiresAuth: true}
   }, 
+  {
+    path: '/testNU',
+    name: 'testNU',
+    component: testNU,
+    meta: {requiresAuth: true}
+  }, 
+
+
   
 
 ]

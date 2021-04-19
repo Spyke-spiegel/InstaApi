@@ -26,7 +26,7 @@ export default {
       fbData: "",
       expires_in: "",
       access_token: "",
-      fbId: "",
+      fbId: [],
     };
   },
 
@@ -50,7 +50,7 @@ export default {
           // let credential = result.credential;
           // var user = result.user;
           // var accessToken = credential.accessToken;
-          console.log(result)
+          console.log(result);
           this.fbData = result;
           // this.$router.replace({name: 'login'})
         })
@@ -73,8 +73,8 @@ export default {
         .then((response2) => {
           if (response2.expires_in) {
             this.expires_in = response2.expires_in;
-          };
-          console.log(response2)
+          }
+          console.log(response2);
           this.access_token = response2.access_token;
           db.collection("Users").doc(this.fbData.user.uid).set({
             access_token: response2.access_token,
@@ -85,18 +85,16 @@ export default {
           });
         });
 
-        await this.InstagramID();
+      await this.InstagramID();
     },
 
     logout() {
       firebase.auth().signOut().then(alert("you are logged out"));
     },
 
-   async InstagramID() {
-     console.log("accessToken : ", this.access_token)
-     let url = await new URL(
-        "https://graph.facebook.com/v10.0/me/accounts"
-      );
+    async InstagramID() {
+      console.log("accessToken : ", this.access_token);
+      let url = await new URL("https://graph.facebook.com/v10.0/me/accounts");
       url.search = await new URLSearchParams({
         access_token: this.access_token,
       });
@@ -105,26 +103,45 @@ export default {
       })
         .then((res) => res.json())
         .then((response) => {
-          console.log(response.data[0].id)
-          this.fbId = response.data[0].id
+          console.log("test multi account = ", response);
+          for (var x = 0; x < response.data.length; x++) {
+            this.fbId.push({
+              id: response.data[x].id,
+              account_name: response.data[x].name,
+            });
+          }
         });
 
+      console.log("test array of FBID= ", this.fbId);
+
+      for (var y = 0; y < this.fbId.length; y++) {
         let url1 = await new URL(
-        `https://graph.facebook.com/v10.0/${this.fbId}`
-      );
-      url1.search = await new URLSearchParams({
-        fields: "instagram_business_account",
-        access_token: this.access_token,
-      });
-      await fetch(url1, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response2) => {
-        db.collection("Users").doc(this.fbData.user.uid).update({
-            IgId: response2.instagram_business_account.id})
+          `https://graph.facebook.com/v10.0/${this.fbId[y].id}`
+        );
+        url1.search = await new URLSearchParams({
+          fields: "instagram_business_account",
+          access_token: this.access_token,
         });
-    }
+        await fetch(url1, {
+          method: "GET",
+        })
+          .then((res) => res.json())
+          .then((response2) => {
+            console.log("test loop for IGID : ", response2);
+            db.collection("Users")
+              .doc(this.fbData.user.uid)
+              .collection("Instagram_account")
+              .doc(this.fbId[y].account_name)
+              .update({
+                IgId: response2.instagram_business_account.id,
+                account_name: this.fbId[y].account_name,
+              });
+            db.collection("Users").doc(this.fbData.user.uid).update({
+              IgId: response2.instagram_business_account.id,
+            });
+          });
+      }
+    },
   },
 };
 </script>
