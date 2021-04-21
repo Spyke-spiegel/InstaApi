@@ -9,8 +9,13 @@ let app;
 
 firebase.auth().onAuthStateChanged(user => {
     if (!app) {
-        app = createApp(App).use(router).mount('#app')
+        app = createApp(App)
+        app.config.globalProperties.url = 'http://localhost:5000';
+        
+        
+        app.use(router).mount('#app')
     }
 })
+
 
 

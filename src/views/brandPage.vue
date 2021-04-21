@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import { db } from "../config/firebaseInit";
 import firebase from "firebase";
 
 export default {
@@ -60,9 +59,7 @@ export default {
   data() {
     return {
       posts: {},
-      access_token: "",
       uid: "",
-      IgId: ""
     };
   },
 
@@ -83,26 +80,17 @@ export default {
         (key) => this.posts[key].length !== 0
       );
       return this.posts && nestedLoaded.length !== 0;
-    }
+    },
   },
 
   methods: {
     async queryInstaData() {
       await console.log("brand username:", this.$route.params.brand);
       var posts = "";
-      await db
-        .collection("Users")
-        .doc(this.uid)
-        .get()
-        .then((doc) => {
-          this.access_token = doc.data().access_token;
-          this.IgId = doc.data().IgId;
-        });
-      //   await console.log("test access token : ", this.access_token);
-      let url = new URL(`https://graph.facebook.com/v10.0/${this.IgId}/`);
+     
+      let url = new URL(`${this.url}/businessdiscovery/${this.$route.params.brand}`);
       url.search = new URLSearchParams({
-        fields: `business_discovery.username(${this.$route.params.brand}){ig_id,name,biography,follows_count,followers_count,media_count,profile_picture_url,media{media_url,comments_count,like_count,timestamp,media_type,permalink}}`,
-        access_token: this.access_token,
+        uid: this.uid,
       });
 
       await fetch(url, {
@@ -110,11 +98,10 @@ export default {
       })
         .then((res) => res.json())
         .then((response) => {
-          console.log("response ", response.business_discovery);
-          this.posts = response.business_discovery;
+          this.posts = response[0].business_discovery;
         });
-      // console.log("Test before DB : " + response.authResponse.accessToken);
-      // await console.log("verif push Igdata = ", this.posts.media.data);
+
+      
     },
   },
 };
@@ -192,7 +179,7 @@ a {
   width: 50vw;
   align-items: center;
   justify-content: center;
-    margin: 0 30px 0 30px
+  margin: 0 30px 0 30px;
 }
 
 .stat {

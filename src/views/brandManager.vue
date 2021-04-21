@@ -4,7 +4,9 @@
       Please enter the name of the brand that you like to watch
     </h2>
     <input type="text" v-model="brand" class="input" required />
-    <button v-on:click="addBrand" type="submit" style="margin-left: 15px">add</button>
+    <button v-on:click="addBrand" type="submit" style="margin-left: 15px">
+      add
+    </button>
     <div>
       <div class="text2">List of already watched brand</div>
       <ul class="list" v-for="brand in listBrand">
@@ -19,7 +21,7 @@
 
 <script>
 import { db } from "../config/firebaseInit";
-import firebase from 'firebase';
+import firebase from "firebase";
 
 export default {
   name: "newBrand",
@@ -27,7 +29,7 @@ export default {
     return {
       brand: null,
       listBrand: [],
-      uid: ""
+      uid: "",
     };
   },
 
@@ -39,49 +41,60 @@ export default {
       }
     });
 
-    await db
-      .collection("Users")
-      .doc(this.uid)
-      .collection("brand")
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          this.listBrand.push(doc.data());
-          console.log(doc.id, " => ", doc.data());
-        });
+    let url = await new URL(`${this.url}/brandmanager`);
+    url.search = await new URLSearchParams({
+      uid: this.uid,
+    });
+
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        this.listBrand = response
       });
     // .then(this.queryInstaData());
-
+        await console.log("list brand => ", this.listBrand);
   },
 
   methods: {
-    addBrand() {
+    async addBrand() {
       if (this.listBrand.some((i) => i.brand === this.brand) == false) {
         this.listBrand.push({ brand: this.brand });
-        db.collection("Users")
-          .doc(this.uid)
-          .collection("brand")
-          .doc(this.brand)
-          .set({
-            brand: this.brand,
-          })
-          .catch((err) => console.log(err));
+
+        let url = new URL(`${this.url}/brandmanager`);
+        url.search = new URLSearchParams({
+          uid: this.uid,
+          brand: this.brand,
+        });
+
+        await fetch(url, {
+          method: "POST",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            console.log("response => ", response);
+          });
       }
     },
-    deleteBrand(id) {
+
+    //to change
+    async deleteBrand(id) {
       console.log(id);
-      db.collection("Users")
-        .doc(this.uid)
-        .collection('brand')
-        .doc(id)
-        .delete()
-        .then(() => {
-          console.log("Document successfully deleted!");
-        })
-        .catch((error) => {
-          console.error("Error removing document: ", error);
+      let url = new URL(`${this.url}/brandmanager`);
+      url.search = new URLSearchParams({
+        uid: this.uid,
+        id: id,
+      });
+
+      await fetch(url, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log("response => ", response);
         });
+
       let deleteId = this.listBrand.findIndex((x) => x.brand === id);
       this.listBrand.splice(deleteId, 1);
       console.log(this.listBrand);
@@ -91,7 +104,7 @@ export default {
 </script>
 
 <style scoped>
-.delBtn{
+.delBtn {
   display: flex;
   flex-direction: row;
   padding: 20px;
@@ -110,5 +123,4 @@ export default {
 .text2 {
   padding: 20px 0 10px 0;
 }
-
 </style>

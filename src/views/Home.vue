@@ -34,19 +34,13 @@
 
 <script>
 // @ is an alias to /src
-// import { initFbsdk } from "@/config/fb.js";
-import { db } from "../config/firebaseInit";
 import firebase from "firebase";
 
 export default {
   name: "Home",
   data() {
     return {
-      brand: [],
       listBrand: [],
-      access_token: "",
-      uid: "",
-      IgId: "",
     };
   },
 
@@ -55,22 +49,9 @@ export default {
       if (user) {
         this.uid = user.uid;
       } else {
+        console.log("problem with firebase Auth")
       }
     });
-
-    await db
-      .collection("Users")
-      .doc(this.uid)
-      .collection("brand")
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          this.brand.push(doc.data().brand);
-          console.log(doc.id, " => ", doc.data());
-        });
-      });
-    // .then(this.queryInstaData());
 
     await this.queryInstaData();
   },
@@ -78,35 +59,18 @@ export default {
   methods: {
     async queryInstaData() {
       // await console.log("Data 1 :", doc);
-      var posts = "";
-      await db
-        .collection("Users")
-        .doc(this.uid)
-        .get()
-        .then((doc) => {
-          console.log(doc.data());
-          this.access_token = doc.data().access_token;
-          this.IgId = doc.data().IgId;
-        });
-      await this.brand.forEach((i) => {
-        // console.log("test brand : ", i);
-        let url = new URL(`https://graph.facebook.com/v10.0/${this.IgId}/`);
-        url.search = new URLSearchParams({
-          fields: `business_discovery.username(${i}){ig_id,name,username,followers_count,media_count,profile_picture_url}`,
-          access_token: this.access_token,
-        });
-
-        fetch(url, {
-          method: "GET",
-        })
-          .then((res) => res.json())
-          .then((response) => {
-            console.log("response facebook API ", response.business_discovery);
-            this.listBrand.push(response.business_discovery);
-          });
+      let url = new URL(`${this.url}/home`);
+      url.search = new URLSearchParams({
+        uid: this.uid,
       });
-      // await console.log("final Array : " + this.listBrand);
-      // await console.log("verif push Igdata = ", this.posts.media.data);
+
+      fetch(url, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          this.listBrand = response;
+        });
     },
   },
 };

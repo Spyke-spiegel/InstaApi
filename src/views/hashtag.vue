@@ -100,41 +100,18 @@ export default {
 
   methods: {
     async searchHashtagID(id) {
-      let url = await new URL(
-        `https://graph.facebook.com/v10.0/ig_hashtag_search`
-      );
+      let url = new URL(`${this.url}/hashtag/search`);
       url.search = new URLSearchParams({
-        user_id: this.IgId,
+        uid: this.uid,
         q: id,
-        access_token: this.access_token,
       });
 
       await fetch(url, {
         method: "GET",
       })
-        .then(this.status)
         .then((res) => res.json())
         .then((response) => {
-          console.log("response ", response.data[0].id);
-          this.hashID = response.data[0].id;
-        });
-
-      let url2 = await new URL(
-        `https://graph.facebook.com/v10.0/${this.hashID}/top_media`
-      );
-      url2.search = new URLSearchParams({
-        user_id: this.IgId,
-        fields:
-          "caption,children,comments_count,id,like_count,media_type,media_url,permalink,timestamp",
-        access_token: this.access_token,
-      });
-
-      await fetch(url2, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log("response ", response);
+          console.log("response => ", response);
           this.listpostHash = response.data;
         });
     },
@@ -143,30 +120,36 @@ export default {
       if (this.listHash.some((i) => i.hash === this.searchHash) == false) {
         console.log("test1");
         this.listHash.push({ hash: this.searchHash });
-        db.collection("Users")
-          .doc(this.uid)
-          .collection("HashTag")
-          .doc(this.searchHash)
-          .set({
-            hash: this.searchHash,
-          })
-          .then(console.log("test"))
-          .catch((err) => console.log(err));
+        let url = new URL(`${this.url}/hashtag`);
+        url.search = new URLSearchParams({
+          uid: this.uid,
+          hash: this.searchHash,
+        });
+
+        await fetch(url, {
+          method: "POST",
+        })
+          .then((res) => res.json())
+          .then((response) => {
+            console.log("response => ", response);
+          });
       }
     },
 
     async deleteHash(id) {
       console.log(id);
-      db.collection("Users")
-        .doc(this.uid)
-        .collection("HashTag")
-        .doc(id)
-        .delete()
-        .then(() => {
-          console.log("Document successfully deleted!");
-        })
-        .catch((error) => {
-          console.error("Error removing document: ", error);
+      let url = new URL(`${this.url}/hashtag`);
+      url.search = new URLSearchParams({
+        uid: this.uid,
+        id: id,
+      });
+
+      await fetch(url, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log("response => ", response);
         });
       let deleteId = this.listHash.findIndex((x) => x.hash === id);
       this.listHash.splice(deleteId, 1);

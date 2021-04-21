@@ -12,6 +12,7 @@ import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
 import hashtag from '../views/hashtag.vue'
 import hashTagInsight from '../views/hashTagInsight.vue'
 import testNU from '../views/testnu.vue'
+import testBE from '../views/testBE.vue'
 
 
 import firebase from 'firebase';
@@ -97,6 +98,12 @@ const routes = [
     path: '/testNU',
     name: 'testNU',
     component: testNU,
+    meta: {requiresAuth: true}
+  }, 
+  {
+    path: '/testBE',
+    name: 'testBE',
+    component: testBE,
     meta: {requiresAuth: true}
   }, 
 
