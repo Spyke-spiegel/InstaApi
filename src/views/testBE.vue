@@ -28,10 +28,9 @@ export default {
 
   methods: {
     async queryInstaData() {
-      let url = new URL(`${this.url}/hashtag/search`);
+      let url = new URL(`${this.url}/hashtaginsight`);
       url.search = new URLSearchParams({
         uid: this.uid,
-        q: "car",
       });
 
       await fetch(url, {

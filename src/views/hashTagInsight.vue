@@ -16,7 +16,7 @@
           <div class="statHash">
             <h1>#{{ doc.hash }}</h1>
             <div class="occu">Occurence : {{ doc.occurence }}</div>
-            <div class="like">Total Likes : {{doc.totalLikes}}</div>
+            <div class="like">Total Likes : {{ doc.totalLikes }}</div>
             <div class="totalcomments">
               Total Comments : {{ doc.totalComments }}
             </div>
@@ -89,23 +89,10 @@ export default {
       } else {
       }
     });
-    let Id = await db
-      .collection("Users")
-      .doc(this.uid)
-      .get()
-      .then((doc) => {
-        this.access_token = doc.data().access_token;
-        this.IgId = doc.data().IgId;
-      });
 
-    let url = await new URL(
-      `https://graph.facebook.com/v10.0/${this.IgId}/media`
-    );
+    let url = new URL(`${this.url}/hashtaginsight`);
     url.search = new URLSearchParams({
-      fields:
-        "like_count, comments_count,comments,timestamp,media_url,media_type,permalink,insights.metric(reach,impressions,saved)",
-      filtering: "[{'field':'text','operator':'IN',value:['#']}]",
-      access_token: this.access_token,
+      uid: this.uid,
     });
 
     await fetch(url, {
@@ -113,11 +100,7 @@ export default {
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log("query at created");
         this.computedData(response);
-        if (response.paging.next) {
-          this.nextPageQuery(response.paging.next);
-        }
       });
   },
 
@@ -139,11 +122,11 @@ export default {
 
     async computedData(response) {
       await console.log("start the compute");
-      for (let x = 0; x < response.data.length; x++) {
-        // await console.log("test insight = ", response.data[x]);
-        if (response.data[x].comments) {
+      for (let x = 0; x < response.length; x++) {
+        // await console.log("test insight = ", response[x]);
+        if (response[x].comments) {
           var tempHash = [];
-          tempHash = await response.data[x].comments.data[0].text
+          tempHash = await response[x].comments.data[0].text
             .split("#")
             .filter(Boolean);
           for (let i = 0; i < tempHash.length; i++) {
@@ -153,16 +136,16 @@ export default {
               );
               await this.hashcomputed[index].occurence++;
               await this.hashcomputed[index].posts.push({
-                id: response.data[x].id,
-                like_count: response.data[x].like_count,
-                comments_count: response.data[x].comments_count,
-                timestamp: response.data[x].timestamp,
-                media_url: response.data[x].media_url,
-                media_type: response.data[x].media_type,
-                permalink: response.data[x].permalink,
-                reach: response.data[x].insights.data[0].values[0].value,
-                impressions: response.data[x].insights.data[1].values[0].value,
-                saved: response.data[x].insights.data[2].values[0].value,
+                id: response[x].id,
+                like_count: response[x].like_count,
+                comments_count: response[x].comments_count,
+                timestamp: response[x].timestamp,
+                media_url: response[x].media_url,
+                media_type: response[x].media_type,
+                permalink: response[x].permalink,
+                reach: response[x].insights.data[0].values[0].value,
+                impressions: response[x].insights.data[1].values[0].value,
+                saved: response[x].insights.data[2].values[0].value,
               });
             } else {
               await this.hashcomputed.push({
@@ -170,17 +153,17 @@ export default {
                 occurence: 1,
                 posts: [
                   {
-                    id: response.data[x].id,
-                    like_count: response.data[x].like_count,
-                    comments_count: response.data[x].comments_count,
-                    timestamp: response.data[x].timestamp,
-                    media_url: response.data[x].media_url,
-                    media_type: response.data[x].media_type,
-                    permalink: response.data[x].permalink,
-                    reach: response.data[x].insights.data[0].values[0].value,
+                    id: response[x].id,
+                    like_count: response[x].like_count,
+                    comments_count: response[x].comments_count,
+                    timestamp: response[x].timestamp,
+                    media_url: response[x].media_url,
+                    media_type: response[x].media_type,
+                    permalink: response[x].permalink,
+                    reach: response[x].insights.data[0].values[0].value,
                     impressions:
-                      response.data[x].insights.data[1].values[0].value,
-                    saved: response.data[x].insights.data[2].values[0].value,
+                      response[x].insights.data[1].values[0].value,
+                    saved: response[x].insights.data[2].values[0].value,
                   },
                 ],
               });
@@ -228,30 +211,12 @@ export default {
           0
         );
       }
-      this.sortedData = this.hashcomputed
+      this.sortedData = this.hashcomputed;
       // await console.log("log final data design = ", this.hashcomputed);
     },
 
-    async nextPageQuery(next) {
-      console.log("start new query");
-      await fetch(next, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-
-        .then((response) => {
-          console.log("log de la funct next page", response);
-          this.computedData(response);
-          if (response.paging.next) {
-            this.nextPageQuery(response.paging.next);
-            return;
-          }
-        });
-    },
-
- 
     sortByAlphabet() {
-      this.sortedData = []
+      this.sortedData = [];
       var byName = this.hashcomputed.slice(0);
       byName.sort(function (a, b) {
         var x = a.hash.toLowerCase();
@@ -261,70 +226,85 @@ export default {
 
       console.log("by name:");
       console.log(byName);
-      this.sortedData = byName
+      this.sortedData = byName;
     },
 
     sortOccurence() {
-      this.sortedData = []
+      this.sortedData = [];
       var byOccurence = this.hashcomputed.slice(0);
       byOccurence.sort(function (a, b) {
-        return  b.occurence - a.occurence;
+        return b.occurence - a.occurence;
       });
       console.log("by occurence:");
       console.log(byOccurence);
       console.log(this.hashcomputed);
-      this.sortedData = (byOccurence)
+      this.sortedData = byOccurence;
     },
 
     sortComments() {
-      this.sortedData = []
+      this.sortedData = [];
       var bycomment = this.hashcomputed.slice(0);
       bycomment.sort(function (a, b) {
-        return b.totalComments - a.totalComments ;
+        return b.totalComments - a.totalComments;
       });
       console.log("by comment:");
       console.log(bycomment);
       console.log(this.hashcomputed);
-      this.sortedData = bycomment
+      this.sortedData = bycomment;
     },
 
     sortLike() {
-      this.sortedData = []
+      this.sortedData = [];
       var byLike = this.hashcomputed.slice(0);
       byLike.sort(function (a, b) {
-        return  b.totalLikes - a.totalLikes;
+        return b.totalLikes - a.totalLikes;
       });
       console.log("by comment:");
       console.log(byLike);
       console.log(this.hashcomputed);
-      this.sortedData = byLike
+      this.sortedData = byLike;
     },
 
-    score(){
-      var weightedReach = 2
-      var weightedImpression = 1
-      var weightedSaved = 4
-      var weightedlike = 3
-      var weightedComments = 1
-      var ponderationTime = 4
-      var  ponderationOccurence = 2
+    score() {
+      var weightedReach = 2;
+      var weightedImpression = 1;
+      var weightedSaved = 4;
+      var weightedlike = 3;
+      var weightedComments = 1;
+      var ponderationTime = 4;
+      var ponderationOccurence = 2;
 
-      for( var x = 0; x<this.hashcomputed.length; x++){
-        var calculreach = this.hashcomputed[x].totalReach * weightedReach
-        var calculImpression = this.hashcomputed[x].totalImpr * weightedImpression
-        var calculSaved = this.hashcomputed[x].totalSaved * weightedSaved
-        var calculLike = this.hashcomputed[x].totalLikes * weightedlike
-        var calculComments = this.hashcomputed[x].totalComments * weightedComments
-        var score = (calculreach + calculImpression + calculSaved + calculLike + calculComments)/(weightedReach+ weightedImpression + weightedSaved + weightedlike+ weightedComments)
-        console.log("test du score ===========> ", this.hashcomputed[x].hash,  " = ", score )
-        console.log("Reach Point : ", calculreach)
-        console.log("Impression Point : ", calculImpression)
-        console.log("Saved Point : ", calculSaved)
-        console.log("Like Point : ", calculLike)
-        console.log("Comments Point : ", calculComments)
+      for (var x = 0; x < this.hashcomputed.length; x++) {
+        var calculreach = this.hashcomputed[x].totalReach * weightedReach;
+        var calculImpression =
+          this.hashcomputed[x].totalImpr * weightedImpression;
+        var calculSaved = this.hashcomputed[x].totalSaved * weightedSaved;
+        var calculLike = this.hashcomputed[x].totalLikes * weightedlike;
+        var calculComments =
+          this.hashcomputed[x].totalComments * weightedComments;
+        var score =
+          (calculreach +
+            calculImpression +
+            calculSaved +
+            calculLike +
+            calculComments) /
+          (weightedReach +
+            weightedImpression +
+            weightedSaved +
+            weightedlike +
+            weightedComments);
+        console.log(
+          "test du score ===========> ",
+          this.hashcomputed[x].hash,
+          " = ",
+          score
+        );
+        console.log("Reach Point : ", calculreach);
+        console.log("Impression Point : ", calculImpression);
+        console.log("Saved Point : ", calculSaved);
+        console.log("Like Point : ", calculLike);
+        console.log("Comments Point : ", calculComments);
       }
-
-
     },
   },
 };
