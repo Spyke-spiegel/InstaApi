@@ -1,23 +1,23 @@
 <template>
-  <div class="container">
+  <div v-if="isDataloaded" class="container">
     <h1 class="title">Insight Page</h1>
-    <div v-if="isbrandInfosloaded" class="brand_infos">
+    <div  class="brand_infos">
       <div class="logo">
-        <img :src="brandInfo.profile_picture_url" alt="" />
+        <img :src="data.profile_picture_url" alt="" />
       </div>
       <div class="brandInfo">
         <div class="name">
-          <h2>{{ brandInfo.name }}</h2>
+          <h2>{{ data.name }}</h2>
         </div>
         <div class="stat">
-          <h3>{{ brandInfo.media_count }} Post</h3>
-          <h3>{{ brandInfo.followers_count }} followers</h3>
-          <h3>{{ brandInfo.follows_count }} following</h3>
+          <h3>{{ data.media_count }} Post</h3>
+          <h3>{{ data.followers_count }} followers</h3>
+          <h3>{{ data.follows_count }} following</h3>
         </div>
       </div>
     </div>
-    <div v-if="isInsightInfosloaded" class="brandMetrics">
-      <select v-model="selected" v-on:change="queryInsight" class="selDropDown">
+    <div  class="brandMetrics">
+      <select v-model="selected" v-on:change="newQueryData" class="selDropDown">
         <option disabled value="">Select the period</option>
         <option>day</option>
         <option>week</option>
@@ -25,25 +25,25 @@
       </select>
     
         <div class="impression">
-          <h1 class="number">{{ brandMetrics[0].values[0].value }}</h1>
-          <div class="period">period : {{ brandMetrics[0].period }}</div>
-          <div class="metrics">Metrics : {{ brandMetrics[0].name }}</div>
+          <h1 class="number">{{ data.insights.data[0].values[0].value }}</h1>
+          <div class="period">period : {{ data.insights.data[0].period }}</div>
+          <div class="metrics">Metrics : {{ data.insights.data[0].name }}</div>
         </div>
         <div class="reach">
-          <h1 class="number">{{ brandMetrics[1].values[0].value }}</h1>
-          <div class="period">period : {{ brandMetrics[1].period }}</div>
-          <div class="metrics">Metrics : {{ brandMetrics[1].name }}</div>
+          <h1 class="number">{{ data.insights.data[1].values[0].value }}</h1>
+          <div class="period">period : {{ data.insights.data[1].period }}</div>
+          <div class="metrics">Metrics : {{ data.insights.data[1].name }}</div>
         </div>
         <!-- <div>
-        <h1 class="number">{{ brandMetrics[2].values[0].value }}</h1>
-        <div class="period">period : {{ brandMetrics[2].period }}</div>
-        <div class="metrics">Metrics : {{ brandMetrics[2].name }}</div>
+        <h1 class="number">{{ data.insights.data[2].values[0].value }}</h1>
+        <div class="period">period : {{ data.insights.data[2].period }}</div>
+        <div class="metrics">Metrics : {{ data.insights.data[2].name }}</div>
       </div> -->
       
     </div>
     <div class="testMedia">
       <div class="grid">
-        <ul v-for="doc in listMediaInsight">
+        <ul v-for="doc in data.media.data">
           <div class="card">
             <router-link
               class="link"
@@ -93,6 +93,7 @@ export default {
   name: "insight",
   data() {
     return {
+      data: {},
       access_token: "",
       brandMetrics: "",
       uid: "",
@@ -111,116 +112,53 @@ export default {
       }
     });
 
-    await this.queryInsight();
-    await this.brandInfos();
-    await this.QueryPostInsight()
-  },
+    let url = new URL(`${this.url}/insight`);
+      url.search = new URLSearchParams({
+        uid: this.uid,
+        insight: "impressions,reach",
+        period: this.selected,
+      });
 
-  computed: {
-    isbrandInfosloaded() {
-      const nestedLoaded = Object.keys(this.brandInfo).map(
-        (key) => this.brandInfo[key].length !== 0
-      );
-      return this.brandInfo && nestedLoaded.length !== 0;
-    },
-
-    isInsightInfosloaded() {
-      const nestedLoaded = Object.keys(this.brandMetrics).map(
-        (key) => this.brandMetrics[key].length !== 0
-      );
-      return this.brandMetrics && nestedLoaded.length !== 0;
-    },
+      await fetch(url, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log("response => ", response);
+          this.data = response;
+        });
   },
 
   methods: {
-    async queryInsight() {
-      let Id = await db
-        .collection("Users")
-        .doc(this.uid)
-        .get()
-        .then((doc) => {
-          this.access_token = doc.data().access_token;
-          this.IgId = doc.data().IgId;
-        });
-
-      let url = await new URL(
-        `https://graph.facebook.com/v10.0/${this.IgId}/insights`
-      );
+    async newQueryData() {
+      let url = new URL(`${this.url}/insight`);
       url.search = new URLSearchParams({
-        metric: "impressions,reach",
+        uid: this.uid,
+        insight: "impressions,reach",
         period: this.selected,
-        access_token: this.access_token,
       });
+
       await fetch(url, {
         method: "GET",
       })
         .then((res) => res.json())
         .then((response) => {
-          // console.log("response ", response);
-          this.brandMetrics = response.data;
+          console.log("response => ", response);
+          this.data = response;
         });
-
-      url.search = new URLSearchParams({
-        metric:
-          "audience_city,audience_country,audience_gender_age,audience_locale",
-        period: "lifetime",
-        access_token: this.access_token,
-      });
-      await fetch(url, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          // console.log("response 2", response);
-          // this.brandMetrics = response.data;
-        });
-    },
-
-    async brandInfos() {
-      let Id = await db
-        .collection("Users")
-        .doc(this.uid)
-        .get()
-        .then((doc) => {
-          this.access_token = doc.data().access_token;
-        });
-
-      let url = await new URL(`https://graph.facebook.com/v10.0/${this.IgId}`);
-      url.search = new URLSearchParams({
-        fields:
-          "name,biography,follows_count,followers_count,media_count,profile_picture_url",
-        access_token: this.access_token,
-      });
-      await fetch(url, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          // console.log("response ", response);
-          this.brandInfo = response;
-        });
-    },
-
-    async QueryPostInsight() {
-      //query Pics and Info for each IG-Media
-
-      let url = await new URL(`https://graph.facebook.com/v10.0/${this.IgId}/media`);
-      url.search = new URLSearchParams({
-        fields:
-          "media_url,timestamp,media_product_type,media_type,like_count,comments_count,insights.metric(engagement,impressions,reach,saved)",
-        access_token: this.access_token,
-      });
-      await fetch(url, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response2) => {
-          this.listMediaInsight = response2.data;
-        });
-
-      await console.log(this.listMediaInsight);
-    },
+    }
   },
+
+  computed: {
+    isDataloaded() {
+      const nestedLoaded = Object.keys(this.data).map(
+        (key) => this.data[key].length !== 0
+      );
+      return this.data && nestedLoaded.length !== 0;
+    },
+   
+  },
+    
 };
 </script>
 

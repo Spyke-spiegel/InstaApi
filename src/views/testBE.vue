@@ -1,17 +1,47 @@
 <template>
   <div class="container">
-    <h1>Test Back End</h1>
+    <h1 class="title">Image Posting</h1>
+    <h2>number of posts send : {{ quotaLimit }} of 25</h2>
+    <div v-if="barValue == 100">
+      <img :src="picURL" id="preview" />
+    </div>
+    <div v-else>
+      <progress class="loadingBar" :value="barValue" max="100" :ref="uploader">
+        0%
+      </progress>
+    </div>
+    <input type="file" name="image" v-on:change="publishIGMedia" id="fileButton" />
+    />
   </div>
 </template>
 
 <script>
+import { storage } from "@/config/firebaseInit";
+import { db } from "@/config/firebaseInit";
 import firebase from "firebase";
-
 export default {
-  name: "brandPage",
+  name: "posting",
   data() {
     return {
-      data: {},
+      message: "",
+      barValue: 0,
+      uploader: "",
+      picURL: "",
+      access_token: "",
+      idMedia: "",
+      postMessage: "",
+      caption: "",
+      quotaLimit: "",
+      mediaCreated: false,
+      mediaPosted: false,
+      errorIgMsg: "",
+      loading: false,
+      postID: "",
+      postURL: "",
+      posted: false,
+      uid: "",
+      IgId: "",
+      firstComment: "",
     };
   },
 
@@ -22,115 +52,213 @@ export default {
       } else {
       }
     });
+    let Id = await db
+      .collection("Users")
+      .doc(this.uid)
+      .get()
+      .then((doc) => {
+        this.access_token = doc.data().access_token;
+        this.IgId = doc.data().IgId;
+      });
 
-    await this.queryInstaData();
+    let url = await new URL(
+      `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
+    );
+    url.search = new URLSearchParams({
+      access_token: this.access_token,
+    });
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log("response ", response);
+        this.quotaLimit = response.data[0].quota_usage;
+      });
+    await console.log("quota limit: ", this.quotaLimit);
   },
 
   methods: {
-    async queryInstaData() {
-      let url = new URL(`${this.url}/hashtaginsight`);
+    // async upload(e) {
+    //   this.message = await "";
+    //   this.posted = await false;
+    //   this.postURL = await "";
+    //   var vm = this;
+    //   var file = e.target.files[0];
+    //   var storageRef = storage.ref("picture/" + file.name);
+    //   var task = storageRef.put(file);
+
+    //   task.on(
+    //     "state_changed",
+    //     function progress(snapshot) {
+    //       var percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //       console.log(percent);
+    //       vm.barValue = percent;
+    //     },
+
+    //     function error(err) {
+    //       alert(err);
+    //     },
+
+    //     function complete(snapshot) {
+    //       var url = task.snapshot.ref.getDownloadURL().then((downloadURL) => {
+    //         console.log("File available at", downloadURL);
+    //         vm.picURL = downloadURL;
+    //       });
+    //     }
+    //   );
+    // },
+
+    async publishIGMedia(e) {
+
+      // API call for creating the IG Media
+      let url = await new URL(`${this.url}/imageposting`);
       url.search = new URLSearchParams({
-        uid: this.uid,
       });
 
+      const data = new FormData();
+      data.append('image', e.target.files[0])
+
       await fetch(url, {
-        method: "GET",
+        method: "POST",
+        body: data
       })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log("response => ", response);
-          this.data = response;
-        });
+
+
+
+
+
+
+
+
+
+
+
+
+      // .catch((err) => {
+      //   alert(err);
+      // });
+      // this.message = await "The media have been created and is now posting";
+
+      // API Call for publishing the IG Media previously created
+
+      // let url2 = await new URL(
+      //   `https://graph.facebook.com/v10.0/${this.IgId}/media_publish`
+      // );
+      // url2.search = await new URLSearchParams({
+      //   creation_id: this.idMedia,
+      //   access_token: this.access_token,
+      // });
+
+      // await fetch(url2, {
+      //   method: "POST",
+      // })
+      //   .then(this.status)
+      //   .then((res) => res.json()) /*  */
+      //   .then((response) => {
+      //     console.log("response ", response);
+      //     this.postID = response.id;
+      //   });
+      // .catch((err) => {
+      //   alert(err);
+      // });
+
+      // API Call fopr retrieving the URL of the Post created
+
+      // let url3 = await new URL(
+      //   `https://graph.facebook.com/v10.0/${this.postID}`
+      // );
+      // url3.search = await new URLSearchParams({
+      //   fields: "permalink",
+      //   access_token: this.access_token,
+      // });
+
+      // await fetch(url3, {
+      //   method: "GET",
+      // })
+      //   .then(this.status)
+      //   .then((res) => res.json()) /*  */
+      //   .then((response) => {
+      //     console.log("response post URL : ", response.permalink);
+      //     this.postURL = response.permalink;
+      //   });
+      // .catch((err) => {
+      //   alert(err);
+      // });
+      // this.message = await "The media has been posted, go check Instagram";
+      // this.posted = await true;
+
+      //Method for adding hashtag fvor the first comment
+      // await this.postFirstComment();
+
+      // Calling the posting quota limit for knowing the new number
+      // await this.quotaLimitCheck();
+    },
+
+    // async postFirstComment() {
+    //   if (this.firstComment != "") {
+    //     let url2 = await new URL(
+    //       `https://graph.facebook.com/v10.0/${this.postID}/comments`
+    //     );
+    //     url2.search = await new URLSearchParams({
+    //       message: this.firstComment,
+    //       access_token: this.access_token,
+    //     });
+
+    //     await fetch(url2, {
+    //       method: "POST",
+    //     })
+    //       .then((res) => res.json()) /*  */
+    //       .then((response) => {
+    //         console.log("response ", response);
+    //       });
+    //   } else {
+    //     console.log("No comment to add")
+    //   }
+    // },
+
+    // async quotaLimitCheck() {
+    //   this.quotaLimit = "";
+    //   let url = await new URL(
+    //     `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
+    //   );
+    //   url.search = new URLSearchParams({
+    //     access_token: this.access_token,
+    //   });
+    //   await fetch(url, {
+    //     method: "GET",
+    //   })
+    //     .then((res) => res.json())
+    //     .then((response) => {
+    //       this.quotaLimit = response.data[0].quota_usage;
+    //     });
+    //   // .catch((err) => {
+    //   //   alert(err);
+    //   // });
+    //   await console.log("quota limit: ", this.quotaLimit);
+    // },
+
+    status(res) {
+      if (!res.ok) {
+        console.log(res);
+        throw new Error(res.statusText);
+      }
+      return res;
     },
   },
 };
 </script>
 
 <style scoped>
-.grid {
-  display: grid;
-  /* grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
-  /* This is better for small screens, once min() is better supported */
-  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-  grid-gap: 1rem;
-  /* This is the standardized property now, but has slightly less support */
-  /* gap: 1rem */
-}
-.grid > ul > div {
-  background: #e7c28a;
-  padding: 1.5rem;
-  border-radius: 1rem;
+#preview {
+  width: 50%;
+  height: auto;
 }
 
-.grid > ul > div > i {
-  color: white;
+.loadingBar {
+  margin: 150px;
 }
 
-.image {
-  height: 15vh;
-}
-video {
-  /* height: 15vh; */
-  width: 100%;
-  height: 15vh;
-}
-.card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* height: 20vh; */
-}
-.likeComment,
-.secondcolumn {
-  margin-top: 10px;
-}
-.likeComment,
-.far,
-.secondcolumn {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-}
-.txt {
-  font-family: "Montserrat", sans-serif;
-  margin-left: 10px;
-}
-a {
-  text-decoration: none;
-  color: black;
-}
-
-.logo > img {
-  height: 10vh;
-  border-radius: 50%;
-}
-
-.brand_infos {
-  display: flex;
-  flex-flow: row wrap;
-  width: 100%;
-  justify-content: center;
-  margin: 30px 0 30px 0;
-}
-.brandInfo {
-  display: flex;
-  flex-direction: column;
-  width: 50vw;
-  align-items: center;
-  justify-content: center;
-  margin: 0 30px 0 30px;
-}
-
-.stat {
-  display: flex;
-  flex-direction: row;
-}
-
-.stat > h3 {
-  padding: 10px;
-}
-
-.bio {
-  width: 100%;
+.title {
 }
 </style>
