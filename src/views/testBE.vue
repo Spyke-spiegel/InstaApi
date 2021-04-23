@@ -111,7 +111,7 @@ export default {
     // },
 
     async test(){
-      let url = new URL(`${this.url}/test`);
+      let url = new URL(`https://instahappy-backend.herokuapp.com/test`);
       url.search = new URLSearchParams({
         uid: this.uid,
       });
