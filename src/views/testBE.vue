@@ -12,6 +12,7 @@
     </div>
     <input type="file" name="image" v-on:change="publishIGMedia" id="fileButton" />
     />
+    <button v-on:click="test">test</button>
   </div>
 </template>
 
@@ -109,11 +110,29 @@ export default {
     //   );
     // },
 
+    async test(){
+      let url = new URL(`${this.url}/test`);
+      url.search = new URLSearchParams({
+        uid: this.uid,
+      });
+
+      await fetch(url, {
+        method: "GET",
+      })
+        .then((res) => res.json())
+        .then((response) => {
+          console.log(response)
+        });
+
+    },
+
+
     async publishIGMedia(e) {
 
       // API call for creating the IG Media
-      let url = await new URL(`${this.url}/imageposting`);
+      let url = await new URL(`https://instahappy-backend.herokuapp.com/test`);
       url.search = new URLSearchParams({
+        uid: this.uid,
       });
 
       const data = new FormData();
