@@ -1145,7 +1145,7 @@ export default {
               {
                 timestamp: "2021-03-23T15:43:35+0000",
                 text:
-                  "Really want the wireless charger \ud83d\ude0d \u0040tinytingtong",
+                  "#techrefined #leathergoods #smallleathergoods #backtobasics #backtoblack #edc #everydaycarry #everydayroutine #fashioninspo #menswearinspo #appleaddict #applefan #smartwallet #leatherwallet #wirelesscharger #wirelesscharging #airpodspro #leatherairpodsprocase #airpodsprocase #techgiveaway #internationalgiveaway",
                 id: "17895887089930083",
               },
             ],
@@ -2511,10 +2511,10 @@ export default {
         var calculComments =
           this.sortedData[x].totalComments * weightedComments;
         // var calculOccurence = this.sortedData[x].occurence * ponderationOccurence
-        var calculOccurence = (1 / (this.sortedData[x].occurence + 1)) * 10000;
+        var calculOccurence = (1 / (this.sortedData[x].occurence + 1)) * 1000;
         var score =
           (calculreach +
-            calculImpression +
+            calculImpression + 
             calculSaved +
             calculLike +
             calculComments +
