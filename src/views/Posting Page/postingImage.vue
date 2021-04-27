@@ -10,7 +10,7 @@
         0%
       </progress>
     </div>
-    <input type="file" v-on:change="upload" id="fileButton" />
+    <input type="file" v-on:change="publishIGMedia" id="fileButton" />
     <input
       type="text"
       v-model="postMessage"
@@ -101,7 +101,7 @@ export default {
   },
 
   methods: {
-    async upload(e) {
+    async upload() {
       this.message = await "";
       this.posted = await false;
       this.postURL = await "";
@@ -131,88 +131,27 @@ export default {
       );
     },
 
-    async publishIGMedia() {
-      this.message = "loading";
-
-      // API call for creating the IG Media
-      let url = await new URL(
-        `https://graph.facebook.com/v10.0/${this.IgId}/media`
-      );
+    async publishIGMedia(e) {
+      let url = await new URL(`https://instahappy-backend.herokuapp.com/imageposting`);
       url.search = new URLSearchParams({
-        image_url: this.picURL,
-        caption: this.postMessage,
-        access_token: this.access_token,
+        uid: this.uid,
       });
+
+      const data = new FormData();
+      data.append('image', e.target.files[0])
 
       await fetch(url, {
         method: "POST",
+        body: data
       })
-        .then(this.status)
-        .then((res) => res.json())
-        .then((response) => {
-          console.log("response ", response);
-          this.idMedia = response.id;
-        });
-      // .catch((err) => {
-      //   alert(err);
-      // });
-      this.message = await "The media have been created and is now posting";
 
-      // API Call for publishing the IG Media previously created
-
-      let url2 = await new URL(
-        `https://graph.facebook.com/v10.0/${this.IgId}/media_publish`
-      );
-      url2.search = await new URLSearchParams({
-        creation_id: this.idMedia,
-        access_token: this.access_token,
-      });
-
-      await fetch(url2, {
-        method: "POST",
-      })
-        .then(this.status)
-        .then((res) => res.json()) /*  */
-        .then((response) => {
-          console.log("response ", response);
-          this.postID = response.id;
-        });
-      // .catch((err) => {
-      //   alert(err);
-      // });
-
-      // API Call fopr retrieving the URL of the Post created
-
-      let url3 = await new URL(
-        `https://graph.facebook.com/v10.0/${this.postID}`
-      );
-      url3.search = await new URLSearchParams({
-        fields: "permalink",
-        access_token: this.access_token,
-      });
-
-      await fetch(url3, {
-        method: "GET",
-      })
-        .then(this.status)
-        .then((res) => res.json()) /*  */
-        .then((response) => {
-          console.log("response post URL : ", response.permalink);
-          this.postURL = response.permalink;
-        });
-      // .catch((err) => {
-      //   alert(err);
-      // });
-      this.message = await "The media has been posted, go check Instagram";
-      this.posted = await true;
-
-      //Method for adding hashtag fvor the first comment
-      await this.postFirstComment();
+      // //Method for adding hashtag fvor the first comment
+      // await this.postFirstComment();
 
 
 
-      // Calling the posting quota limit for knowing the new number
-      await this.quotaLimitCheck();
+      // // Calling the posting quota limit for knowing the new number
+      // await this.quotaLimitCheck();
     },
 
     async postFirstComment() {
