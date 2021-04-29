@@ -13,6 +13,7 @@ import hashtag from '../views/hashtag.vue'
 import hashTagInsight from '../views/hashTagInsight.vue'
 import testNU from '../views/testnu.vue'
 import testBE from '../views/testBE.vue'
+import payment from '../views/payment.vue'
 
 
 import firebase from 'firebase';
@@ -105,6 +106,13 @@ const routes = [
     name: 'testBE',
     component: testBE,
     meta: {requiresAuth: true}
+  }, 
+
+  {
+    path: '/payment',
+    name: 'payment',
+    component: payment,
+    meta: {requiresAuth: false}
   }, 
 
 

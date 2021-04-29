@@ -2,15 +2,8 @@
   <div class="container">
     <h1 class="title">Image Posting</h1>
     <h2>number of posts send : {{ quotaLimit }} of 25</h2>
-    <div v-if="barValue == 100">
-      <img :src="picURL" id="preview" />
-    </div>
-    <div v-else>
-      <progress class="loadingBar" :value="barValue" max="100" :ref="uploader">
-        0%
-      </progress>
-    </div>
-    <input type="file" v-on:change="publishIGMedia" id="fileButton" />
+
+    <input type="file" v-on:change="getImage" id="fileButton" />
     <input
       type="text"
       v-model="postMessage"
@@ -64,6 +57,7 @@ export default {
       uid: "",
       IgId: "",
       firstComment: "",
+      file: "",
     };
   },
 
@@ -101,108 +95,33 @@ export default {
   },
 
   methods: {
-    async upload() {
-      this.message = await "";
-      this.posted = await false;
-      this.postURL = await "";
-      var vm = this;
-      var file = e.target.files[0];
-      var storageRef = storage.ref("picture/" + file.name);
-      var task = storageRef.put(file);
-
-      task.on(
-        "state_changed",
-        function progress(snapshot) {
-          var percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log(percent);
-          vm.barValue = percent;
-        },
-
-        function error(err) {
-          alert(err);
-        },
-
-        function complete(snapshot) {
-          var url = task.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            console.log("File available at", downloadURL);
-            vm.picURL = downloadURL;
-          });
-        }
-      );
+    getImage(e) {
+      this.file = e.target.files[0];
     },
 
     async publishIGMedia(e) {
-      let url = await new URL(`https://instahappy-backend.herokuapp.com/imageposting`);
+      console.log(this.file);
+      let url = await new URL(
+        `https://instahappy-backend.herokuapp.com/imageposting`
+      );
       url.search = new URLSearchParams({
         uid: this.uid,
+        caption: this.postMessage,
       });
 
       const data = new FormData();
-      data.append('image', e.target.files[0])
+      data.append("image", this.file);
 
       await fetch(url, {
         method: "POST",
-        body: data
+        body: data,
       })
-
-      // //Method for adding hashtag fvor the first comment
-      // await this.postFirstComment();
-
-
-
-      // // Calling the posting quota limit for knowing the new number
-      // await this.quotaLimitCheck();
-    },
-
-    async postFirstComment() {
-      if (this.firstComment != "") {
-        let url2 = await new URL(
-          `https://graph.facebook.com/v10.0/${this.postID}/comments`
-        );
-        url2.search = await new URLSearchParams({
-          message: this.firstComment,
-          access_token: this.access_token,
-        });
-
-        await fetch(url2, {
-          method: "POST",
-        })
-          .then((res) => res.json()) /*  */
-          .then((response) => {
-            console.log("response ", response);
-          });
-      } else {
-        console.log("No comment to add")
-      }
-    },
-
-    async quotaLimitCheck() {
-      this.quotaLimit = "";
-      let url = await new URL(
-        `https://graph.facebook.com/v10.0/${this.IgId}/content_publishing_limit`
-      );
-      url.search = new URLSearchParams({
-        access_token: this.access_token,
-      });
-      await fetch(url, {
-        method: "GET",
-      })
-        .then((res) => res.json())
+        .then((res) => res.json()) /*  */
         .then((response) => {
-          this.quotaLimit = response.data[0].quota_usage;
+          console.log("response ", response);
+          this.quotaLimit = response.quotaLimit;
+          this.postURL = response.postURL;
         });
-      // .catch((err) => {
-      //   alert(err);
-      // });
-      await console.log("quota limit: ", this.quotaLimit);
-    },
-
-    status(res) {
-      if (!res.ok) {
-        console.log(res);
-        throw new Error(res.statusText);
-      }
-      return res;
     },
   },
 };
