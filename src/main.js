@@ -10,8 +10,8 @@ let app;
 firebase.auth().onAuthStateChanged(user => {
     if (!app) {
         app = createApp(App)
-        // app.config.globalProperties.url = 'http://localhost:5000';
-        app.config.globalProperties.url = 'https://instahappy-backend.herokuapp.com';
+        app.config.globalProperties.url = 'http://localhost:5000';
+        // app.config.globalProperties.url = 'https://instahappy-backend.herokuapp.com';
         
         app.use(router).mount('#app')
     }

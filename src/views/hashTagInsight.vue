@@ -28,7 +28,7 @@
           </div>
           <div class="lastPost">
             <ul v-for="post in doc.posts" :key="post.id">
-              <button v-on:click="modalTransmit(post)" v-bind:id="post.id">
+              <!-- <button v-on:click="modalTransmit(post)" v-bind:id="post.id" class="button">
                 <modal
                   v-bind:revele="revele"
                   v-bind:selectedElement="selectedElement"
@@ -36,7 +36,13 @@
                 <div class="post">
                   <img class="postImage" :src="post.media_url" alt="" />
                 </div>
-              </button>
+              </button> -->
+
+              <input type="image" :src="post.media_url" class="inputImage" v-bind:id="post.id" v-on:click="modalTransmit(post)"/>
+              <modal
+                  v-bind:revele="revele"
+                  v-bind:selectedElement="selectedElement"
+                ></modal>
             </ul>
           </div>
         </div>
@@ -322,8 +328,8 @@ export default {
   margin: 50px 100px 0 100px;
 }
 .grid > ul > div {
-  background: #e7c28a;
-  padding: 1.5rem;
+  background: #DBC5D5;
+  /* padding: 1.5rem; */
   border-radius: 1rem;
 }
 
@@ -338,8 +344,19 @@ export default {
   /* height: 20vh; */
 }
 
+.statHash {
+  padding: 20px
+}
+
 .postImage {
   height: 60px;
+  object-fit: cover;
+}
+
+.post {
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 .lastPost {
@@ -347,7 +364,15 @@ export default {
   flex-direction: row;
 }
 
+.button {
+  height: 100%;
+}
+
 .title {
   margin: 50px;
+}
+
+.inputImage {
+  height:200px
 }
 </style>

@@ -1,13 +1,12 @@
 <template>
   <div class="home">
     <div class="logo">
-      <img alt="Vue logo" src="../assets/insthappy.png" />
-      <h1>Welcome to InstaHappy</h1>
+      <h1>Welcome to Instametrics</h1>
       <!-- <button class="login" v-on:click="login">login Facebook</button> -->
     </div>
     <h2>list of Brand that you watch</h2>
     <div class="grid">
-      <ul v-for="brand in listBrand">
+      <ul v-for="brand in listBrand" v-bind:key="brand.id">
         <router-link
           class="link"
           v-bind:to="{ name: 'brandPage', params: { brand: brand.username } }"
@@ -78,7 +77,7 @@ export default {
 
 <style scoped>
 .grid {
-  padding-top: 20px;
+  padding-top: 50px;
   display: grid;
   /* grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); */
   /* This is better for small screens, once min() is better supported */

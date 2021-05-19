@@ -1,20 +1,16 @@
 <template>
   <div class="container">
     <div class="navbar">
+      <div id="navbarButton" @click="navbarVisible = !navbarVisible" >
+        <i class="fas fa-bars" ></i>
+      </div>
       <div class="logo">
-        <router-link to="/">
-          <img src="../assets/insthappy.png" class="logo" alt="" />
+        <router-link to="/" id='logoText'>
+          INSTAMETRICS
         </router-link>
       </div>
       <div class="route">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/insight">Insights</router-link>
-        |
-        <router-link to="/brandManager">Brand Manager</router-link>|
-        <router-link to="/posting">Posting</router-link> |
-        <router-link to="/hashtag">hashtag</router-link> |
-        <router-link to="/hashTagInsight">Hashtag Insights</router-link> | 
-        <router-link to="/login">Login</router-link>
+        
       </div>
       <div class="loginInfo">
         <img :src="photoURL" alt="" />
@@ -23,6 +19,16 @@
         <button @click="signOut">Sign Out</button>
       </div>
     </div>
+      <div v-if="navbarVisible" id='navbarDrawer'>
+        <router-link to="/">Home</router-link> 
+        <router-link to="/insight">Insights</router-link>
+        
+        <router-link to="/brandManager">Brand Manager</router-link>
+        <router-link to="/posting">Posting</router-link> 
+        <router-link to="/hashtag">hashtag</router-link> 
+        <router-link to="/hashTagInsight">Hashtag Insights</router-link>  
+        <router-link to="/login">Login</router-link>
+      </div>
   </div>
 </template>
 
@@ -35,8 +41,11 @@ export default {
       loggedIn: false,
       photoURL: "",
       name: "",
+      navbarVisible: false
     };
   },
+
+
 
   created() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -68,28 +77,31 @@ export default {
 .container {
   height: 10vh;
   width: 100vw;
-  background: rgb(251, 225, 137);
   background: linear-gradient(
     90deg,
-    rgba(251, 225, 137, 1) 0%,
-    rgba(243, 130, 129, 1) 100%
+    #f3b2b4 0%,
+    #c6d6f3 100%
   );
 }
 
-a {
+/* a {
   font-weight: bold;
   color: #a7381d;
 }
 
 a.router-link-exact-active {
   color: #6c1d09;
-}
+} */
 
 .loginInfo {
-  color: #6c1d09;
+  color: white;
   align-self: center;
   justify-self: right;
   padding: 20px;
+   grid-column-start: 3;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
 }
 
 .navbar {
@@ -98,23 +110,43 @@ a.router-link-exact-active {
   grid-template-rows: 115px;
 }
 
-.route {
-  grid-column-start: 0;
-  align-self: center;
-  justify-self: center;
-}
-
-.route > a {
-  padding: 10px;
-  font-size: 23px;
-  text-decoration: none;
-}
-
 .logo {
-  grid-column-start: 1;
-  grid-column-end: 1;
-  height: 100%;
-  justify-self: right;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  justify-self: center;
   align-self: center;
 }
+
+#logoText {
+  font-size: 35px;
+  font-weight:900;
+  color: white;
+}
+
+#navbarButton {
+  align-self: center;
+  justify-self: left;
+  padding-left: 40px;
+  font-size: 30px;
+  color: white;
+}
+
+#navbarDrawer {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  top: 10%;
+  left: 0px;
+  background: linear-gradient(
+    0deg,
+    #f3b2b4 0%,
+    #c6d6f3 100%
+  );
+  height: 100vh;
+}
+
+#navbarDrawer > a {
+  padding: 20px;
+}
+
 </style>

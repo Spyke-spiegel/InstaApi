@@ -196,17 +196,24 @@ export default {
   /* gap: 1rem */
 }
 .grid > ul > div {
-  background: #e7c28a;
-  padding: 1.5rem;
+  background: #DBC5D5;
   border-radius: 1rem;
 }
 .image {
   height: 15vh;
+  width: 100%;
+  overflow: hidden;
+  object-fit:cover;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
 }
 video {
   /* height: 15vh; */
   width: 100%;
-  height: 100%;
+  height: 15vh;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+    object-fit:cover;
 }
 .card {
   display: flex;
@@ -216,7 +223,7 @@ video {
 }
 .likeComment,
 .secondcolumn {
-  margin-top: 10px;
+  margin: 10px 0 20px 0;
 }
 .likeComment,
 .far,
