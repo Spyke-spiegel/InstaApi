@@ -13,21 +13,21 @@
         
       </div>
       <div class="loginInfo">
-        <img :src="photoURL" alt="" />
+        <img :src="photoURL" alt="" class="profilePics"/>
         <div v-if="loggedIn">Logged in {{ name }}</div>
         <div v-else>Logged in : NO</div>
         <button @click="signOut">Sign Out</button>
       </div>
     </div>
       <div v-if="navbarVisible" id='navbarDrawer'>
-        <router-link to="/">Home</router-link> 
-        <router-link to="/insight">Insights</router-link>
+        <router-link to="/" @click="navbarVisible = !navbarVisible" >Home</router-link> 
+        <router-link to="/insight" @click="navbarVisible = !navbarVisible">Insights</router-link>
         
-        <router-link to="/brandManager">Brand Manager</router-link>
-        <router-link to="/posting">Posting</router-link> 
-        <router-link to="/hashtag">hashtag</router-link> 
-        <router-link to="/hashTagInsight">Hashtag Insights</router-link>  
-        <router-link to="/login">Login</router-link>
+        <router-link to="/brandManager" @click="navbarVisible = !navbarVisible">Brand Manager</router-link>
+        <router-link to="/posting" @click="navbarVisible = !navbarVisible">Posting</router-link> 
+        <router-link to="/hashtag" @click="navbarVisible = !navbarVisible">hashtag</router-link> 
+        <router-link to="/hashTagInsight" @click="navbarVisible = !navbarVisible">Hashtag Insights</router-link>  
+        <router-link to="/login" @click="navbarVisible = !navbarVisible">Login</router-link>
       </div>
   </div>
 </template>
@@ -94,7 +94,7 @@ a.router-link-exact-active {
 } */
 
 .loginInfo {
-  color: white;
+  color: black;
   align-self: center;
   justify-self: right;
   padding: 20px;
@@ -120,7 +120,7 @@ a.router-link-exact-active {
 #logoText {
   font-size: 35px;
   font-weight:900;
-  color: white;
+  color: black;
 }
 
 #navbarButton {
@@ -128,7 +128,7 @@ a.router-link-exact-active {
   justify-self: left;
   padding-left: 40px;
   font-size: 30px;
-  color: white;
+  color: black;
 }
 
 #navbarDrawer {
@@ -147,6 +147,11 @@ a.router-link-exact-active {
 
 #navbarDrawer > a {
   padding: 20px;
+}
+
+.profilePics {
+  border-radius: 50%;
+
 }
 
 </style>
