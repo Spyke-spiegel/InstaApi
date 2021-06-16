@@ -1,23 +1,38 @@
 <template>
   <div v-if="revele" class="container">
-    <div class="overlay" v-on:click="toggleModale"></div>
+    <div class="overlay" @click="$emit('close')"></div>
     <div class="modal">
-      <button class="btnCls" v-on:click="toggleModale">X</button>
-      <h2>Post detail</h2>
+      <button class="btnCls" @click="$emit('close')">X</button>
       <div class="card">
-        <div class="image"><img :src="selectedElement.media_url" alt="" /></div>
+        <div class="image">
+          <img id="pics" :src="selectedElement.media_url" alt="" />
+        </div>
         <div class="info">
-          <div class="like">Like : {{ selectedElement.like_count }}</div>
-          <div class="comment">
-            comment : {{ selectedElement.comments_count }}
+          <div id="firstRow">
+            <img src="../assets/placebo.jpg" alt="" id="placeboImg" />
+            <div>Placebo IG Account</div>
           </div>
-          <div class="comments">{{selectedElement.comment}}</div>
-          <div class="insight">
-            <div class="reach">Reach : {{ selectedElement.reach }}</div>
-            <div class="impressions">
-              Impressions : {{ selectedElement.impressions }}
+          <div id="secondRow">
+            <div id="infoFirstrow">
+              <div class="like center">
+                Like : {{ selectedElement.like_count }}
+              </div>
+              <div class="comment center Bleft">
+                comment : {{ selectedElement.comments_count }}
+              </div>
             </div>
-            <div class="saved">Saved : {{ selectedElement.saved }}</div>
+            <div id="infoSecondrow">
+              <div class="reach center">
+                Reach : {{ selectedElement.reach }}
+              </div>
+              <div class="impressions center Bleft">
+                Impressions : {{ selectedElement.impressions }}
+              </div>
+              <div class="saved center Bleft">
+                Saved : {{ selectedElement.saved }}
+              </div>
+            </div>
+            <div class="comments">{{ selectedElement.comment }}</div>
           </div>
         </div>
       </div>
@@ -44,18 +59,13 @@ export default {
     };
   },
 
-  created() {
-    console.log("test modal props id", this.id); //undefined;
-  },
-
   methods: {
     modalTransmit(post) {
       console.log(post);
-     
     },
 
     querycomment() {
-      console.log("hello world")
+      console.log("hello world");
       //  let url = new URL(`https://graph.facebook.com/v10.0/${this.selectedElement.id}/comments`);
       // url.search = new URLSearchParams({
       //   access_token: this.selectedElement.access_token,
@@ -72,7 +82,7 @@ export default {
       //       console.log(comment)
       //     });
       //   });
-    }
+    },
   },
 };
 </script>
@@ -100,20 +110,107 @@ export default {
   left: 0;
   right: 0;
 }
+.card {
+  height: 100%;
+  width: 100%;
+}
 
 .modal {
-  background: pink;
+  background: rgb(255, 237, 240);
   position: fixed;
-  padding: 50px;
+  border-radius: 15px;
+  height: 50vh;
+  width: 70vw;
 }
 
 .btnCls {
   position: absolute;
   top: 10px;
   right: 10px;
+  width: 20px;
+  height: 20px;
 }
 
-.image > img {
-  height: 30vh;
+.image {
+  height: 100%;
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#pics {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.card {
+  display: flex;
+  flex-direction: row;
+}
+
+.info {
+  width: 40%;
+  height: 100%;
+}
+
+#firstRow {
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#placeboImg {
+  padding: 10px;
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+}
+
+#infoFirstrow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 50px;
+}
+
+#infoFirstrow > * {
+  border-top: solid;
+  border-bottom: solid;
+  width: 100%;
+  height: 100%;
+}
+
+.Bleft {
+  border-left: solid;
+}
+
+#infoSecondrow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 50px;
+  padding-top: 1%;
+}
+
+#infoSecondrow > * {
+  border-bottom: solid;
+  width: 100%;
+  height: 100%;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -38,11 +38,18 @@
                 </div>
               </button> -->
 
-              <input type="image" :src="post.media_url" class="inputImage" v-bind:id="post.id" v-on:click="modalTransmit(post)"/>
+              <input
+                type="image"
+                :src="post.media_url"
+                class="inputImage"
+                v-bind:id="post.id"
+                v-on:click="modalTransmit(post)"
+              />
               <modal
-                  v-bind:revele="revele"
-                  v-bind:selectedElement="selectedElement"
-                ></modal>
+                v-bind:revele="revele"
+                v-bind:selectedElement="selectedElement"
+                @close="revele = false"
+              ></modal>
             </ul>
           </div>
         </div>
@@ -114,6 +121,7 @@ export default {
     modalTransmit(post) {
       this.selectedElement.media_url = post.media_url;
       this.selectedElement.like_count = post.like_count;
+      this.selectedElement.comments_count = post.comments_count;
       this.selectedElement.id = post.id;
       this.selectedElement.timestamp = post.timestamp;
       this.selectedElement.media_type = post.media_type;
@@ -167,8 +175,7 @@ export default {
                     media_type: response[x].media_type,
                     permalink: response[x].permalink,
                     reach: response[x].insights.data[0].values[0].value,
-                    impressions:
-                      response[x].insights.data[1].values[0].value,
+                    impressions: response[x].insights.data[1].values[0].value,
                     saved: response[x].insights.data[2].values[0].value,
                   },
                 ],
@@ -328,7 +335,7 @@ export default {
   margin: 50px 100px 0 100px;
 }
 .grid > ul > div {
-  background: #DBC5D5;
+  background: #dbc5d5;
   /* padding: 1.5rem; */
   border-radius: 1rem;
 }
@@ -345,7 +352,7 @@ export default {
 }
 
 .statHash {
-  padding: 20px
+  padding: 20px;
 }
 
 .postImage {
@@ -373,6 +380,6 @@ export default {
 }
 
 .inputImage {
-  height:200px
+  height: 200px;
 }
 </style>

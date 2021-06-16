@@ -80,7 +80,7 @@ export default {
       mediaCreated: false,
       mediaPosted: false,
       errorIgMsg: "",
-      loading: true,
+      loading: false,
       postID: "",
       postURL: "",
       posted: false,
