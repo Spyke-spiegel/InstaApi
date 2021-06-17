@@ -1,34 +1,35 @@
 <template>
-  <div class="container">
-    <h1 class="title">Account hashtag insight page</h1>
+  <div>
+    <div class="container">
+      <h1 class="title">Account hashtag insight page</h1>
 
-    <div class="listSort">
-      <button v-on:click="sortOccurence">sort by occurence</button>
-      <button v-on:click="sortComments">sort by comments</button>
-      <button v-on:click="sortLike">sort by like</button>
-      <button v-on:click="sortByAlphabet">sort by Name</button>
-      <button v-on:click="score">test Score</button>
-    </div>
+      <div class="listSort">
+        <button v-on:click="sortOccurence">sort by occurence</button>
+        <button v-on:click="sortComments">sort by comments</button>
+        <button v-on:click="sortLike">sort by like</button>
+        <button v-on:click="sortByAlphabet">sort by Name</button>
+        <button v-on:click="score">test Score</button>
+      </div>
 
-    <div class="grid">
-      <ul v-for="(doc, index) in sortedData">
-        <div class="card">
-          <div class="statHash">
-            <h1>#{{ doc.hash }}</h1>
-            <div class="occu">Occurence : {{ doc.occurence }}</div>
-            <div class="like">Total Likes : {{ doc.totalLikes }}</div>
-            <div class="totalcomments">
-              Total Comments : {{ doc.totalComments }}
+      <div class="grid">
+        <ul v-for="(doc, index) in sortedData">
+          <div class="card">
+            <div class="statHash">
+              <h1>#{{ doc.hash }}</h1>
+              <div class="occu">Occurence : {{ doc.occurence }}</div>
+              <div class="like">Total Likes : {{ doc.totalLikes }}</div>
+              <div class="totalcomments">
+                Total Comments : {{ doc.totalComments }}
+              </div>
+              <div class="totalReach">Total Reach : {{ doc.totalReach }}</div>
+              <div class="totallImpr">
+                Total Imptressions : {{ doc.totalImpr }}
+              </div>
+              <div class="totalSaved">Total Saved : {{ doc.totalSaved }}</div>
             </div>
-            <div class="totalReach">Total Reach : {{ doc.totalReach }}</div>
-            <div class="totallImpr">
-              Total Imptressions : {{ doc.totalImpr }}
-            </div>
-            <div class="totalSaved">Total Saved : {{ doc.totalSaved }}</div>
-          </div>
-          <div class="lastPost">
-            <ul v-for="post in doc.posts" :key="post.id">
-              <!-- <button v-on:click="modalTransmit(post)" v-bind:id="post.id" class="button">
+            <div class="lastPost">
+              <ul v-for="post in doc.posts" :key="post.id">
+                <!-- <button v-on:click="modalTransmit(post)" v-bind:id="post.id" class="button">
                 <modal
                   v-bind:revele="revele"
                   v-bind:selectedElement="selectedElement"
@@ -38,23 +39,24 @@
                 </div>
               </button> -->
 
-              <input
-                type="image"
-                :src="post.media_url"
-                class="inputImage"
-                v-bind:id="post.id"
-                v-on:click="modalTransmit(post)"
-              />
-              <modal
-                v-bind:revele="revele"
-                v-bind:selectedElement="selectedElement"
-                @close="revele = false"
-              ></modal>
-            </ul>
+                <input
+                  type="image"
+                  :src="post.media_url"
+                  class="inputImage"
+                  v-bind:id="post.id"
+                  v-on:click="modalTransmit(post)"
+                />
+              </ul>
+            </div>
           </div>
-        </div>
-      </ul>
+        </ul>
+      </div>
     </div>
+    <modal
+      v-bind:revele="revele"
+      v-bind:selectedElement="selectedElement"
+      @close="revele = false"
+    ></modal>
   </div>
 </template>
 

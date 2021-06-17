@@ -103,7 +103,7 @@ export default {
 }
 
 .overlay {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.6);
   position: fixed;
   top: 0;
   bottom: 0;

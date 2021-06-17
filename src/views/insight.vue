@@ -1,29 +1,34 @@
 <template>
-  <div v-if="isDataloaded" class="container">
-    <h1 class="title">Insight Page</h1>
-    <div  class="brand_infos">
-      <div class="logo">
-        <img :src="data.profile_picture_url" alt="" />
-      </div>
-      <div class="brandInfo">
-        <div class="name">
-          <h2>{{ data.name }}</h2>
+  <div>
+    <div v-if="isDataloaded" class="container">
+      <h1 class="title">Insight Page</h1>
+      <div class="brand_infos">
+        <div class="logo">
+          <img :src="data.profile_picture_url" alt="" />
         </div>
-        <div class="stat">
-          <h3>{{ data.media_count }} Post</h3>
-          <h3>{{ data.followers_count }} followers</h3>
-          <h3>{{ data.follows_count }} following</h3>
+        <div class="brandInfo">
+          <div class="name">
+            <h2>{{ data.name }}</h2>
+          </div>
+          <div class="stat">
+            <h3>{{ data.media_count }} Post</h3>
+            <h3>{{ data.followers_count }} followers</h3>
+            <h3>{{ data.follows_count }} following</h3>
+          </div>
         </div>
       </div>
-    </div>
-    <div  class="brandMetrics">
-      <select v-model="selected" v-on:change="newQueryData" class="selDropDown">
-        <option disabled value="">Select the period</option>
-        <option>day</option>
-        <option>week</option>
-        <option>days_28</option>
-      </select>
-    
+      <div class="brandMetrics">
+        <select
+          v-model="selected"
+          v-on:change="newQueryData"
+          class="selDropDown"
+        >
+          <option disabled value="">Select the period</option>
+          <option>day</option>
+          <option>week</option>
+          <option>days_28</option>
+        </select>
+
         <div class="impression">
           <h1 class="number">{{ data.insights.data[0].values[0].value }}</h1>
           <div class="period">period : {{ data.insights.data[0].period }}</div>
@@ -39,16 +44,19 @@
         <div class="period">period : {{ data.insights.data[2].period }}</div>
         <div class="metrics">Metrics : {{ data.insights.data[2].name }}</div>
       </div> -->
-      
-    </div>
-    <div class="testMedia">
-      <div class="grid">
-        <ul v-for="doc in data.media.data">
-          <div class="card">
-            <router-link
+      </div>
+      <div class="testMedia">
+        <div class="grid">
+          <ul v-for="doc in data.media.data" v-bind:key="doc.id">
+            <div
+              class="card"
+              v-bind:id="doc.id"
+              v-on:click="modalTransmit(doc)"
+            >
+              <!-- <router-link
               class="link"
               v-bind:to="{ name: 'detailInsight', params: { id: doc.id } }"
-            >
+            > -->
               <div class="imgCard">
                 <div
                   class="test"
@@ -70,27 +78,43 @@
                     ><div class="txt">{{ doc.comments_count }}</div></i
                   >
                 </div>
-                <div class="imp">impressions : {{ doc.insights.data[1].values[0].value }}</div>
-                <div class="reach">reach : {{ doc.insights.data[2].values[0].value }}</div>
-                <div class="eng">engagement : {{ doc.insights.data[0].values[0].value }}</div>
+                <div class="imp">
+                  impressions : {{ doc.insights.data[1].values[0].value }}
+                </div>
+                <div class="reach">
+                  reach : {{ doc.insights.data[2].values[0].value }}
+                </div>
+                <div class="eng">
+                  engagement : {{ doc.insights.data[0].values[0].value }}
+                </div>
                 <div class="secondcolumn">
                   <span>{{ doc.timestamp }}</span>
                 </div>
               </div>
-            </router-link>
-          </div>
-        </ul>
+              <!-- </router-link> -->
+            </div>
+          </ul>
+        </div>
       </div>
     </div>
+    <modal
+      v-bind:revele="revele"
+      v-bind:selectedElement="selectedElement"
+      @close="revele = false"
+    ></modal>
   </div>
 </template>
 
 <script>
+import Modal from "../components/modalPost.vue";
 import { db } from "../config/firebaseInit";
 import firebase from "firebase";
 
 export default {
   name: "insight",
+  components: {
+    modal: Modal,
+  },
   data() {
     return {
       data: {},
@@ -101,6 +125,20 @@ export default {
       brandInfo: "",
       IgId: "",
       listMediaInsight: [],
+      revele: false,
+      selectedElement: {
+        media_url: "",
+        like_count: 0,
+        comments_count: 0,
+        id: "",
+        timestamp: "",
+        media_type: "",
+        permalink: "",
+        reach: "",
+        impressions: "",
+        saved: "",
+        access_token: "",
+      },
     };
   },
 
@@ -113,23 +151,39 @@ export default {
     });
 
     let url = new URL(`${this.url}/insight`);
-      url.search = new URLSearchParams({
-        uid: this.uid,
-        insight: "impressions,reach",
-        period: this.selected,
-      });
+    url.search = new URLSearchParams({
+      uid: this.uid,
+      insight: "impressions,reach",
+      period: this.selected,
+    });
 
-      await fetch(url, {
-        method: "GET",
-      })
-        .then((res) => res.json())
-        .then((response) => {
-          console.log("response => ", response);
-          this.data = response;
-        });
+    await fetch(url, {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        console.log("response => ", response);
+        this.data = response;
+      });
   },
 
   methods: {
+    modalTransmit(post) {
+      this.selectedElement.media_url = post.media_url;
+      this.selectedElement.like_count = post.like_count;
+      this.selectedElement.comments_count = post.comments_count;
+      this.selectedElement.id = post.id;
+      this.selectedElement.timestamp = post.timestamp;
+      this.selectedElement.media_type = post.media_type;
+      this.selectedElement.permalink = post.permalink;
+      this.selectedElement.reach = post.reach;
+      this.selectedElement.impressions = post.impressions;
+      this.selectedElement.saved = post.saved;
+      this.selectedElement.access_token = this.access_token;
+
+      this.revele = !this.revele;
+    },
+
     async newQueryData() {
       let url = new URL(`${this.url}/insight`);
       url.search = new URLSearchParams({
@@ -146,7 +200,7 @@ export default {
           console.log("response => ", response);
           this.data = response;
         });
-    }
+    },
   },
 
   computed: {
@@ -156,9 +210,7 @@ export default {
       );
       return this.data && nestedLoaded.length !== 0;
     },
-   
   },
-    
 };
 </script>
 
@@ -196,14 +248,14 @@ export default {
   /* gap: 1rem */
 }
 .grid > ul > div {
-  background: #DBC5D5;
+  background: #dbc5d5;
   border-radius: 1rem;
 }
 .image {
   height: 15vh;
   width: 100%;
   overflow: hidden;
-  object-fit:cover;
+  object-fit: cover;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
 }
@@ -213,7 +265,7 @@ video {
   height: 15vh;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
-    object-fit:cover;
+  object-fit: cover;
 }
 .card {
   display: flex;
@@ -241,7 +293,7 @@ a {
   color: black;
 }
 
-.title{
+.title {
   padding: 30px 0 30px 0;
 }
 

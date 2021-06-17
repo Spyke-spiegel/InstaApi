@@ -1,34 +1,49 @@
 <template>
   <div class="container">
     <div class="navbar">
-      <div id="navbarButton" @click="navbarVisible = !navbarVisible" >
-        <i class="fas fa-bars" ></i>
+      <div id="navbarButton" @click="navbarVisible = !navbarVisible">
+        <i class="fas fa-bars"></i>
       </div>
       <div class="logo">
-        <router-link to="/" id='logoText'>
-          INSTAMETRICS
-        </router-link>
+        <router-link to="/" id="logoText"> INSTAMETRICS </router-link>
       </div>
-      <div class="route">
-        
-      </div>
+      <div class="route"></div>
       <div class="loginInfo">
-        <img :src="photoURL" alt="" class="profilePics"/>
+        <img :src="photoURL" alt="" class="profilePics" />
         <div v-if="loggedIn">Logged in {{ name }}</div>
         <div v-else>Logged in : NO</div>
         <button @click="signOut">Sign Out</button>
       </div>
     </div>
-      <div v-if="navbarVisible" id='navbarDrawer'>
-        <router-link to="/" @click="navbarVisible = !navbarVisible" >Home</router-link> 
-        <router-link to="/insight" @click="navbarVisible = !navbarVisible">Insights</router-link>
-        
-        <router-link to="/brandManager" @click="navbarVisible = !navbarVisible">Brand Manager</router-link>
-        <router-link to="/posting" @click="navbarVisible = !navbarVisible">Posting</router-link> 
-        <router-link to="/hashtag" @click="navbarVisible = !navbarVisible">hashtag</router-link> 
-        <router-link to="/hashTagInsight" @click="navbarVisible = !navbarVisible">Hashtag Insights</router-link>  
-        <router-link to="/login" @click="navbarVisible = !navbarVisible">Login</router-link>
+    <div id="navbarContainer">
+      <div v-if="navbarVisible" id="navbarDrawer">
+        <router-link to="/" @click="navbarVisible = !navbarVisible"
+          >Home</router-link
+        >
+        <router-link to="/insight" @click="navbarVisible = !navbarVisible"
+          >Insights</router-link
+        >
+
+        <router-link to="/brandManager" @click="navbarVisible = !navbarVisible"
+          >Brand Manager</router-link
+        >
+        <router-link to="/posting" @click="navbarVisible = !navbarVisible"
+          >Posting</router-link
+        >
+        <router-link to="/hashtag" @click="navbarVisible = !navbarVisible"
+          >hashtag</router-link
+        >
+        <router-link
+          to="/hashTagInsight"
+          @click="navbarVisible = !navbarVisible"
+          >Hashtag Insights</router-link
+        >
+        <router-link to="/account" @click="navbarVisible = !navbarVisible"
+          >My Account</router-link
+        >
       </div>
+      <div id="navbarOverlay" @click="navbarVisible = !navbarVisible"></div>
+    </div>
   </div>
 </template>
 
@@ -41,11 +56,9 @@ export default {
       loggedIn: false,
       photoURL: "",
       name: "",
-      navbarVisible: false
+      navbarVisible: false,
     };
   },
-
-
 
   created() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -77,11 +90,7 @@ export default {
 .container {
   height: 10vh;
   width: 100vw;
-  background: linear-gradient(
-    90deg,
-    #f3b2b4 0%,
-    #c6d6f3 100%
-  );
+  background: linear-gradient(90deg, #f3b2b4 0%, #c6d6f3 100%);
 }
 
 /* a {
@@ -98,7 +107,7 @@ a.router-link-exact-active {
   align-self: center;
   justify-self: right;
   padding: 20px;
-   grid-column-start: 3;
+  grid-column-start: 3;
   grid-column-end: 3;
   grid-row-start: 1;
   grid-row-end: 1;
@@ -119,7 +128,7 @@ a.router-link-exact-active {
 
 #logoText {
   font-size: 35px;
-  font-weight:900;
+  font-weight: 900;
   color: black;
 }
 
@@ -137,11 +146,7 @@ a.router-link-exact-active {
   flex-direction: column;
   top: 10%;
   left: 0px;
-  background: linear-gradient(
-    0deg,
-    #f3b2b4 0%,
-    #c6d6f3 100%
-  );
+  background: linear-gradient(0deg, #f3b2b4 0%, #c6d6f3 100%);
   height: 100vh;
 }
 
@@ -151,7 +156,15 @@ a.router-link-exact-active {
 
 .profilePics {
   border-radius: 50%;
-
 }
 
+#navbarContainer {
+  width: 100vw;
+  height: 100vh;
+}
+
+#navbarOverlay {
+  height: 100%;
+  width: 100%;
+}
 </style>

@@ -1,138 +1,140 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import login from '../views/login.vue'
-import brandManager from '../views/brandManager.vue'
-import brandPage from '../views/brandPage.vue'
-import posting from '../views/posting.vue'
-import insight from '../views/insight.vue'
-import detailInsight from '../views/detailInsight.vue'
-import postingImage from '../views/Posting Page/postingImage.vue'
-import postingVideo from '../views/Posting Page/postingVideo.vue'
-import schedulePosting from '../views/Posting Page/SchedulePosting.vue'
-import hashtag from '../views/hashtag.vue'
-import hashTagInsight from '../views/hashTagInsight.vue'
-import testNU from '../views/testnu.vue'
-import testBE from '../views/testBE.vue'
-import payment from '../views/payment.vue'
+import { createRouter, createWebHashHistory } from "vue-router";
+import Home from "../views/Home.vue";
+import login from "../views/login.vue";
+import brandManager from "../views/brandManager.vue";
+import brandPage from "../views/brandPage.vue";
+import posting from "../views/posting.vue";
+import insight from "../views/insight.vue";
+import detailInsight from "../views/detailInsight.vue";
+import postingImage from "../views/Posting Page/postingImage.vue";
+import postingVideo from "../views/Posting Page/postingVideo.vue";
+import schedulePosting from "../views/Posting Page/SchedulePosting.vue";
+import hashtag from "../views/hashtag.vue";
+import hashTagInsight from "../views/hashTagInsight.vue";
+import testNU from "../views/testnu.vue";
+import testBE from "../views/testBE.vue";
+import payment from "../views/payment.vue";
+import account from "../views/account.vue";
 
-
-import firebase from 'firebase';
+import firebase from "firebase";
 import "firebase/auth";
- 
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
+    path: "/",
+    name: "Home",
     component: Home,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
 
   {
-    path: '/login',
-    name: 'login',
+    path: "/login",
+    name: "login",
     component: login,
-    meta: {requiresAuth: false}
+    meta: { requiresAuth: false },
   },
 
   {
-    path: '/brandManager',
-    name: 'brandManager',
+    path: "/brandManager",
+    name: "brandManager",
     component: brandManager,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/brandPage/:brand',
-    name: 'brandPage',
+    path: "/brandPage/:brand",
+    name: "brandPage",
     component: brandPage,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/posting',
-    name: 'posting',
+    path: "/posting",
+    name: "posting",
     component: posting,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/insight',
-    name: 'insight',
+    path: "/insight",
+    name: "insight",
     component: insight,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/detailInsight/:id',
-    name: 'detailInsight',
+    path: "/detailInsight/:id",
+    name: "detailInsight",
     component: detailInsight,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/posting/image',
-    name: 'postingImage',
+    path: "/posting/image",
+    name: "postingImage",
     component: postingImage,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/posting/video',
-    name: 'postingVideo',
+    path: "/posting/video",
+    name: "postingVideo",
     component: postingVideo,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/posting/schedule',
-    name: 'schedulePosting',
+    path: "/posting/schedule",
+    name: "schedulePosting",
     component: schedulePosting,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/hashtag',
-    name: 'hashtag',
+    path: "/hashtag",
+    name: "hashtag",
     component: hashtag,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true },
   },
   {
-    path: '/hashTagInsight',
-    name: 'hashTagInsight',
+    path: "/hashTagInsight",
+    name: "hashTagInsight",
     component: hashTagInsight,
-    meta: {requiresAuth: true}
-  }, 
+    meta: { requiresAuth: true },
+  },
   {
-    path: '/testNU',
-    name: 'testNU',
+    path: "/testNU",
+    name: "testNU",
     component: testNU,
-    meta: {requiresAuth: true}
-  }, 
+    meta: { requiresAuth: true },
+  },
   {
-    path: '/testBE',
-    name: 'testBE',
+    path: "/testBE",
+    name: "testBE",
     component: testBE,
-    meta: {requiresAuth: true}
-  }, 
+    meta: { requiresAuth: true },
+  },
 
   {
-    path: '/payment',
-    name: 'payment',
+    path: "/payment",
+    name: "payment",
     component: payment,
-    meta: {requiresAuth: false}
-  }, 
+    meta: { requiresAuth: false },
+  },
 
-
-  
-
-]
+  {
+    path: "/account",
+    name: "account",
+    component: account,
+    meta: { requiresAuth: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const isAuthenticated = firebase.auth().currentUser;
-  if(requiresAuth && !isAuthenticated) {
-    next("/login")
+  if (requiresAuth && !isAuthenticated) {
+    next("/login");
   } else {
     next();
   }
-})
+});
 
-export default router
+export default router;
