@@ -7,8 +7,8 @@
           <h2>{{ posts.name }}</h2>
         </div>
         <div class="stat">
-          <h3>{{ posts.media_count }} Posts |</h3>
-          <h3>{{ posts.followers_count }} followers |</h3>
+          <h3>{{ posts.media_count }} Posts </h3>
+          <h3>{{ posts.followers_count }} followers </h3>
           <h3>{{ posts.follows_count }} following</h3>
         </div>
         <div class="bio">{{ posts.biography }}</div>
@@ -244,5 +244,22 @@ a {
 
 .bio {
   width: 100%;
+}
+
+.container {
+  padding: 0 1rem 0 1rem;
+}
+
+@media (max-width: 1000px)  {
+
+  .brand_infos {
+    flex-direction: column;
+    align-content: center;
+  }
+
+  .image {
+    height: 50vh;
+  }
+
 }
 </style>

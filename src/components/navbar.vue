@@ -15,38 +15,41 @@
         <button @click="signOut">Sign Out</button>
       </div>
     </div>
-    <div id="navbarContainer">
-      <div v-if="navbarVisible" id="navbarDrawer">
-        <router-link to="/" @click="navbarVisible = !navbarVisible"
-          >Home</router-link
-        >
-        <router-link to="/insight" @click="navbarVisible = !navbarVisible"
-          >Insights</router-link
-        >
+    <transition name="fade">
+      <div id="navbarContainer" v-if="navbarVisible">
+        <div id="navbarDrawer">
+          <router-link to="/" @click="navbarVisible = !navbarVisible"
+            >Home</router-link
+          >
+          <router-link to="/insight" @click="navbarVisible = !navbarVisible"
+            >Insights</router-link
+          >
 
-        <router-link to="/brandManager" @click="navbarVisible = !navbarVisible"
-          >Brand Manager</router-link
-        >
-        <router-link to="/posting" @click="navbarVisible = !navbarVisible"
-          >Posting</router-link
-        >
-        <router-link to="/hashtag" @click="navbarVisible = !navbarVisible"
-          >hashtag</router-link
-        >
-        <router-link
-          to="/hashTagInsight"
-          @click="navbarVisible = !navbarVisible"
-          >Hashtag Insights</router-link
-        >
-        <router-link to="/account" @click="navbarVisible = !navbarVisible"
-          >My Account</router-link
-        >
+          <router-link
+            to="/brandManager"
+            @click="navbarVisible = !navbarVisible"
+            >Brand Manager</router-link
+          >
+          <router-link to="/posting" @click="navbarVisible = !navbarVisible"
+            >Posting</router-link
+          >
+          <router-link to="/hashtag" @click="navbarVisible = !navbarVisible"
+            >hashtag</router-link
+          >
+          <router-link
+            to="/hashTagInsight"
+            @click="navbarVisible = !navbarVisible"
+            >Hashtag Insights</router-link
+          >
+          <router-link to="/account" @click="navbarVisible = !navbarVisible"
+            >My Account</router-link
+          >
+        </div>
+        <div id="navbarOverlay" @click="navbarVisible = !navbarVisible"></div>
       </div>
-      <div id="navbarOverlay" @click="navbarVisible = !navbarVisible"></div>
-    </div>
+    </transition>
   </div>
 </template>
-
 
 <script>
 import firebase from "firebase";
@@ -75,7 +78,10 @@ export default {
   methods: {
     async signOut() {
       try {
-        const data = await firebase.auth().signOut().then();
+        const data = await firebase
+          .auth()
+          .signOut()
+          .then();
         console.log(data);
         this.$router.replace({ name: "login" });
       } catch (error) {
@@ -147,7 +153,7 @@ a.router-link-exact-active {
   top: 10%;
   left: 0px;
   background: linear-gradient(0deg, #f3b2b4 0%, #c6d6f3 100%);
-  height: 100vh;
+  height: 100%;
 }
 
 #navbarDrawer > a {
@@ -160,11 +166,19 @@ a.router-link-exact-active {
 
 #navbarContainer {
   width: 100vw;
-  height: 100vh;
+  height: 100%;
 }
 
 #navbarOverlay {
   height: 100%;
   width: 100%;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
 </style>

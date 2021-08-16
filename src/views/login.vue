@@ -2,10 +2,9 @@
 <template>
   <div class="container">
     <div class="text">
-      <h1>Welcome to InstHappy</h1>
-      <h2>the happiest Instagram place</h2>
+      <h1>Welcome to Instametrics</h1>
       <div>
-        For beginning, please Login to your Facebook account using the link
+        For beginning, please connect your Facebook account using the link
         below
       </div>
     </div>
@@ -86,6 +85,7 @@ export default {
         });
 
       await this.InstagramID();
+      await this.$router.push({ name: 'Home'})
     },
 
     logout() {

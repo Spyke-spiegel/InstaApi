@@ -213,4 +213,24 @@ export default {
   justify-content: center;
   align-items: center;
 }
+@media (max-width: 1000px)  {
+
+.card {
+  flex-direction: column;
+}
+
+.modal {
+  width: 90vw;
+  height: 90vh;
+}
+
+.info {
+  width: 100%;
+}
+
+.image {
+  width: 100%;
+}
+
+}
 </style>

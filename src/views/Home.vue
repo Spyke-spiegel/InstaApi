@@ -91,6 +91,7 @@ export default {
   background: #a8afac;
   padding: 1.5rem;
   border-radius: 1rem;
+ 
 }
 
 .card {
