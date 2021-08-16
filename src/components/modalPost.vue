@@ -2,7 +2,7 @@
   <div v-if="revele" class="container">
     <div class="overlay" @click="$emit('close')"></div>
     <div class="modal">
-      <button class="btnCls" @click="$emit('close')">X</button>
+      <!-- <button class="btnCls" @click="$emit('close')">X</button> -->
       <div class="card">
         <div class="image">
           <img id="pics" :src="selectedElement.media_url" alt="" />
@@ -109,6 +109,8 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
+  height: 100%;
 }
 .card {
   height: 100%;
@@ -230,6 +232,11 @@ export default {
 
 .image {
   width: 100%;
+}
+
+#pics {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 
 }

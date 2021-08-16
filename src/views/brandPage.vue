@@ -252,6 +252,10 @@ a {
 
 @media (max-width: 1000px)  {
 
+  .container {
+    width: 100vw;
+  }
+
   .brand_infos {
     flex-direction: column;
     align-content: center;
